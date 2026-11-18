@@ -404,20 +404,29 @@ if(partAttachments.ingredients.length){for(let k=0;k<partAttachments.ingredients
 
 const completedStages=(d.processStages||[]).filter(v=>[v.title,v.detail,v.temperature,v.time,v.point].some(x=>String(x||'').trim())||(v.images&&v.images.length));
 for(let i=0;i<completedStages.length;i++){
- const v=completedStages[i];s=pptx.addSlide();base(s,'02 · Manufacturing process · '+String(i+1).padStart(2,'0'),String(v.title||'제조 공정 '+(i+1)).trim());
- let yy=1.9;
- for(const [label,value] of [['작업 내용 및 상태',v.detail],['온도 및 조건',v.temperature],['소요 시간',v.time],['주의사항 및 확인 사항',v.point]]){
-  if(String(value||'').trim()){addText(s,label,.9,yy,5.2,.25,{size:12,bold:true,color:gold});yy+=.3;addText(s,String(value),.9,yy,11.2,label==='작업 내용 및 상태'||label==='주의사항 및 확인 사항'? .85:.4,{size:14,valign:'top'});yy+=label==='작업 내용 및 상태'||label==='주의사항 및 확인 사항'?1.0:.58;}
+ const v=completedStages[i], stageImages=(v.images||[]).filter(im=>im&&im.data);
+ s=pptx.addSlide();base(s,'02 · Manufacturing process · '+String(i+1).padStart(2,'0'),String(v.title||'제조 공정 '+(i+1)).trim());
+ // One slide combines the process record and all supporting photos for that stage.
+ const textX=stageImages.length?7.05:.9, textW=stageImages.length?5.25:11.2;
+ let ty=1.9;
+ const fields=[['작업 내용 및 상태',v.detail],['온도 및 조건',v.temperature],['소요 시간',v.time],['주의사항 및 확인 사항',v.point]].filter(x=>String(x[1]||'').trim());
+ for(const [label,value] of fields){
+  addText(s,label,textX,ty,textW,.24,{size:12,bold:true,color:gold});ty+=.3;
+  const boxH=label==='작업 내용 및 상태'||label==='주의사항 및 확인 사항'?1.0:.52;
+  addText(s,String(value),textX,ty,textW,boxH,{size:13,valign:'top'});ty+=boxH+.2;
  }
- if(v.images&&v.images.length){
-  for(let j=0;j<v.images.length;j++){
-   const img=v.images[j];s=pptx.addSlide();base(s,'Process supporting photo · '+String(i+1).padStart(2,'0'),String(v.title||'제조 공정 '+(i+1)).trim()+' · 보조 사진 '+(j+1));
-   await addImageFit(s,img.data,.7,1.85,7.1,4.95);
-   const desc=String(img.description||img.caption||v.detail||'').trim();
-   const conditions=[['온도 및 조건',v.temperature],['소요 시간',v.time],['주의사항',v.point]].filter(x=>String(x[1]||'').trim());
-   let ty=2.0;
-   if(desc){addText(s,'사진 설명',8.05,ty,4.4,.28,{size:13,bold:true,color:gold});ty+=.38;addText(s,desc,8.05,ty,4.35,1.45,{size:13,valign:'top'});ty+=1.65;}
-   for(const [label,value] of conditions){addText(s,label,8.05,ty,4.3,.24,{size:11,bold:true,color:gold});ty+=.3;addText(s,String(value),8.05,ty,4.3,.55,{size:12,valign:'top'});ty+=.72;}
+ if(stageImages.length===1){
+  await addImageFit(s,stageImages[0].data,.75,1.9,5.95,4.85);
+  const caption=String(stageImages[0].description||stageImages[0].caption||'').trim();
+  if(caption)addText(s,caption,.85,6.78,5.75,.22,{size:9,color:muted});
+ }else if(stageImages.length>1){
+  const cols=2,rows=Math.ceil(stageImages.length/cols),gap=.16,top=1.95,availableH=4.85;
+  const cellW=(5.95-gap)/2,cellH=(availableH-gap*(rows-1))/rows;
+  for(let j=0;j<stageImages.length;j++){
+   const im=stageImages[j],col=j%2,row=Math.floor(j/2),x=.75+col*(cellW+gap),y=top+row*(cellH+gap);
+   await addImageFit(s,im.data,x,y,cellW,cellH);
+   const caption=String(im.description||im.caption||'').trim();
+   if(caption&&cellH>.65)addText(s,caption,x,y+cellH-.22,cellW,.2,{size:7,color:muted});
   }
  }
 }
