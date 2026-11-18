@@ -33,7 +33,7 @@ button{border:0;border-radius:11px;padding:13px 16px;font-weight:800;cursor:poin
 #ingredientTable input,#ingredientTable select,#toppingTable input{padding:9px 8px;font-size:12px;min-width:85px}
 #ingredientTable .ing-name{min-width:135px}
 #ingredientTable .ing-grams{min-width:95px}
-#ingredientTable .ing-percent,#ingredientTable .ing-total-percent{font-weight:800;color:#7d6249;white-space:nowrap}
+#ingredientTable .ing-percent{font-weight:800;color:#7d6249;white-space:nowrap}
 .ingredient-actions{display:flex;gap:4px;white-space:nowrap}
 .ingredient-actions button{padding:7px 8px;font-size:11px;background:#f2eee6;color:#584a3c}
 .ingredient-actions .delete-ingredient{background:#f4eeee;color:#875d5d}
@@ -88,14 +88,14 @@ button{border:0;border-radius:11px;padding:13px 16px;font-weight:800;cursor:poin
   <button type="button" class="ingredient-clear" id="clearIngredients">전체 항목 비우기</button>
 </div>
 <div class="ingredient-table-wrap"><table id="ingredientTable">
-<thead><tr><th>순서</th><th>재료 구분</th><th>재료명</th><th>사용량 (g)</th><th>밀가루 기준 %</th><th>총중량 대비 %</th><th>항목 관리</th></tr></thead>
+<thead><tr><th>순서</th><th>재료 구분</th><th>재료명</th><th>사용량 (g)</th><th>베이커스 퍼센트 (%)</th><th>항목 관리</th></tr></thead>
 <tbody id="ingredientRows"></tbody></table></div>
 <div class="ingredient-summary">
   <span id="ingredientCount">등록 항목: 0개</span>
   <span id="flourTotal">밀가루 총량: 0 g (기준 100%)</span>
   <strong id="ingredientTotal">반죽 총중량: 0 g</strong>
 </div>
-<p class="hint" style="margin-top:8px">밀가루가 여러 종류라면 모든 밀가루 중량의 합계를 100%로 계산합니다. ‘총중량 대비 %’는 토핑물을 제외한 반죽 재료 총중량을 100%로 계산합니다.</p>
+<p class="hint" style="margin-top:8px">밀가루가 여러 종류라면 모든 밀가루 중량의 합계를 100%로 계산합니다. 각 재료의 베이커스 퍼센트는 모든 밀가루 중량의 합계를 100%로 계산합니다. 반죽 총중량의 베이커스 퍼센트도 표 마지막에 표시합니다.</p>
 <div class="topping-section">
  <div class="ingredient-toolbar"><div><strong>토핑물 · 별도 계량</strong><p class="hint" style="margin:4px 0 0">토핑물은 반죽 총중량 및 반죽 베이커스 퍼센트 계산에서 제외됩니다.</p></div><div class="ingredient-add-buttons"><button type="button" class="ghost" id="addTopping">+ 토핑물 추가</button><button type="button" class="ingredient-clear" id="clearToppings">토핑 비우기</button></div></div>
  <div class="ingredient-table-wrap"><table id="toppingTable"><thead><tr><th>순서</th><th>토핑물명</th><th>사용량 (g)</th><th>항목 관리</th></tr></thead><tbody id="toppingRows"></tbody></table></div>
@@ -248,7 +248,7 @@ function addIngredientRow(item={}, focusName=false){
  <td><select class="ing-kind" aria-label="재료 구분"><option value="other">일반 재료</option><option value="flour">밀가루</option></select></td>
  <td><input class="ing-name" aria-label="재료명" placeholder="예: 강력분"></td>
  <td><input class="ing-grams" aria-label="사용량(g)" type="number" min="0" step="0.1" inputmode="decimal" placeholder="예: 500"></td>
- <td class="ing-percent">—</td><td class="ing-total-percent">—</td>
+ <td class="ing-percent">—</td>
  <td><div class="ingredient-actions">
    <button type="button" class="move-up" aria-label="위로 이동" title="위로 이동">↑</button>
    <button type="button" class="move-down" aria-label="아래로 이동" title="아래로 이동">↓</button>
@@ -283,7 +283,6 @@ function updateIngredientTotals(){
   const v=items[i];
   tr.querySelector('.ing-order').textContent=(i+1);
   tr.querySelector('.ing-percent').textContent=flour>0&&v.grams>0?(v.grams/flour*100).toFixed(1)+'%':'—';
-  tr.querySelector('.ing-total-percent').textContent=total>0&&v.grams>0?(v.grams/total*100).toFixed(1)+'%':'—';
   tr.querySelector('.move-up').disabled=i===0;
   tr.querySelector('.move-down').disabled=i===rows.length-1;
  });
@@ -363,7 +362,7 @@ function makePdfHtml(d){
  const esc=escapeHtml;
  const dough=(d.ingredients||[]).filter(it=>String(it.name||'').trim()||String(it.grams??'').trim()!=='');const flourBase=dough.filter(it=>it.kind==='flour').reduce((a,it)=>a+(Number(it.grams)||0),0);const doughTotal=dough.reduce((a,it)=>a+(Number(it.grams)||0),0);
  const toppingItems=(d.toppings||[]).filter(it=>String(it.name||'').trim()||String(it.grams??'').trim()!=='');
- const ingredientRows=[...dough.map(it=>`<tr><td>${esc(it.name||'')}</td><td>${esc(it.grams??'')} g</td><td>${flourBase>0?(((Number(it.grams)||0)/flourBase)*100).toFixed(1)+'%':''}</td><td>${doughTotal>0?((Number(it.grams)||0)/doughTotal*100).toFixed(1)+'%':''}</td></tr>`),...toppingItems.map(it=>`<tr class="topping-row"><td>토핑 · ${esc(it.name||'')}</td><td>${esc(it.grams??'')} g</td><td>—</td><td>—</td></tr>`)].join('');
+ const ingredientRows=[...dough.map(it=>`<tr><td>${esc(it.name||'')}</td><td>${esc(it.grams??'')} g</td><td>${flourBase>0?(((Number(it.grams)||0)/flourBase)*100).toFixed(1)+'%':''}</td></tr>`),...toppingItems.map(it=>`<tr class="topping-row"><td>토핑 · ${esc(it.name||'')}</td><td>${esc(it.grams??'')} g</td><td>—</td></tr>`)].join('');
  const stages=(d.processStages||[]).filter(x=>x.title||x.detail||x.temperature||x.time||x.point).map((x,i)=>`<section class="stage"><h3>${i+1}. ${esc(x.title||'공정 단계')}</h3>${x.detail?`<p>${esc(x.detail).replace(/\n/g,'<br>')}</p>`:''}${x.temperature?`<p><b>온도 및 조건:</b> ${esc(x.temperature)}</p>`:''}${x.time?`<p><b>소요 시간:</b> ${esc(x.time)}</p>`:''}${x.point?`<p><b>주의사항:</b> ${esc(x.point).replace(/\n/g,'<br>')}</p>`:''}${(x.images||[]).map(im=>`<img class="photo" src="${im.data}" alt="${esc(im.name||'공정 사진')}">`).join('')}</section>`).join('');
  const attach=(d.attachments||{});
  const ingredientImageBlock=(attach.ingredients||[]).length?`<div class="photos ingredient-photos">${(attach.ingredients||[]).map(im=>`<figure><img class="photo ingredient-photo" src="${im.data}" alt=""></figure>`).join('')}</div>`:'';
@@ -373,17 +372,24 @@ function makePdfHtml(d){
  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${esc(d.product||'실습 과제')} - O.BAKERY PROJECT</title><style>
  @page{size:A4;margin:16mm}*{box-sizing:border-box}body{font-family:Arial,'Noto Sans KR',sans-serif;color:#26332f;line-height:1.55;margin:0}
  h1{font-size:28pt;margin:0 0 8mm}h2{font-size:17pt;border-bottom:1px solid #d9d1c4;padding-bottom:3mm;margin:9mm 0 4mm;color:#9b7652}
- h3{font-size:13pt;margin:0 0 3mm}p{margin:2mm 0;font-size:10.5pt}.cover{padding:20mm 0 12mm;border-bottom:3px solid #a7835f;margin-bottom:8mm}
- .meta{color:#68746d;font-size:10pt}.stage{break-inside:avoid;border:1px solid #e7e4db;border-radius:8px;padding:5mm;margin:4mm 0}
- table{width:100%;border-collapse:collapse;font-size:10pt}th,td{border:1px solid #ddd;padding:7px;text-align:left}th{background:#f2eee6}.topping-row td:first-child{padding-left:14px;color:#8b6b4b}.total-row th{background:#eee8dc;font-weight:800}
+ h3{font-size:13pt;margin:0 0 3mm}p{margin:2mm 0;font-size:10.5pt;orphans:3;widows:3}.cover{padding:20mm 0 12mm;border-bottom:3px solid #a7835f;margin-bottom:8mm}
+ .meta{color:#68746d;font-size:10pt}.stage{break-inside:avoid;page-break-inside:avoid;border:1px solid #e7e4db;border-radius:8px;padding:5mm;margin:4mm 0}
+ /* PDF 페이지 분할 시 제목만 페이지 끝에 남거나 표의 첫 줄이 잘리는 현상 방지 */
+ h1,h2,h3{break-inside:avoid;page-break-inside:avoid}
+ h2{break-after:avoid-page;page-break-after:avoid;margin-top:9mm}
+ h2+p,h2+table,h2+.stage{break-before:avoid-page;page-break-before:avoid}
+ table{width:100%;border-collapse:collapse;font-size:10pt;break-inside:auto;page-break-inside:auto}
+ thead{display:table-header-group}tfoot{display:table-footer-group}
+ tr,th,td{break-inside:avoid;page-break-inside:avoid}
+ th,td{border:1px solid #ddd;padding:7px;text-align:left}th{background:#f2eee6}.topping-row td:first-child{padding-left:14px;color:#8b6b4b}.total-row th{background:#eee8dc;font-weight:800}
  .photo{max-width:100%;max-height:95mm;object-fit:contain;margin:3mm 2mm 0 0}.photos{display:flex;flex-wrap:wrap;gap:5mm}
- .subhead{font-size:12pt;margin:5mm 0 2mm;color:#9b7652}.ingredient-photos{margin:0 0 5mm;break-inside:avoid}.ingredient-photo{max-height:75mm;width:100%;object-fit:contain}.ingredient-photos figure{width:100%;break-inside:avoid}figure{width:46%;margin:0 0 5mm;break-inside:avoid}figcaption{font-size:9pt;color:#68746d}
+ .subhead{font-size:12pt;margin:5mm 0 2mm;color:#9b7652}.ingredient-photos{margin:0 0 5mm;break-inside:avoid;page-break-inside:avoid}.ingredient-photo{max-height:75mm;width:100%;object-fit:contain}.ingredient-photos figure{width:100%;break-inside:avoid;page-break-inside:avoid}figure{width:46%;margin:0 0 5mm;break-inside:avoid;page-break-inside:avoid}figcaption{font-size:9pt;color:#68746d}
  .muted{color:#68746d}.note{background:#f7f5ef;padding:4mm;border-left:3px solid #a7835f}
  @media print{button{display:none}}
  </style></head><body>
  <div class="cover"><div class="meta">O.BAKERY PROJECT · BAKERY / PASTRY PRACTICE</div><h1>${esc(d.product||'실습 과제')}</h1><p>제과·제빵 실습 기록 및 결과 보고서</p><p class="meta">${esc([d.studentName,d.studentDepartment,d.studentId].filter(Boolean).join(' · '))}${d.date?' · '+esc(d.date):''}${d.className?' · '+esc(d.className):''}</p></div>
  <h2>1. 제품 정보</h2><p><b>제품명:</b> ${esc(d.product||'미입력')}</p>${d.className?`<p><b>수업명:</b> ${esc(d.className)}</p>`:''}
- ${ingredientRows?`<h2>2. 재료 계량 및 배합표</h2><p>밀가루 총량: ${flourBase.toLocaleString('ko-KR')} g = 100% · 반죽 총중량: ${doughTotal.toLocaleString('ko-KR')} g</p><table><thead><tr><th>재료명</th><th>사용량 (g)</th><th>밀가루 기준 %</th><th>총중량 대비 %</th></tr></thead><tbody>${ingredientRows}<tr class="total-row"><th>반죽 총중량</th><th>${doughTotal.toLocaleString('ko-KR')} g</th><th>—</th><th>100%</th></tr></tbody></table><p class="muted">※ 토핑물은 반죽 총중량과 베이커스 퍼센트 계산에서 제외됩니다.</p>`:''}${ingredientImageBlock}
+ ${ingredientRows?`<h2>2. 재료 계량 및 배합표</h2><p>밀가루 총량: ${flourBase.toLocaleString('ko-KR')} g = 100% · 반죽 총중량: ${doughTotal.toLocaleString('ko-KR')} g</p><table><thead><tr><th>재료명</th><th>사용량 (g)</th><th>베이커스 퍼센트 (%)</th></tr></thead><tbody>${ingredientRows}<tr class="total-row"><th>반죽 총중량</th><th>${doughTotal.toLocaleString('ko-KR')} g</th><th>${flourBase>0?(doughTotal/flourBase*100).toFixed(1)+'%':'—'}</th></tr></tbody></table><p class="muted">※ 토핑물은 반죽 총중량과 베이커스 퍼센트 계산에서 제외됩니다.</p>`:''}${ingredientImageBlock}
  ${stages?`<h2>3. 제조 공정</h2>${stages}`:''}
  ${senses.length?`<h2>4. 관능평가</h2><table><tbody>${senses.map(x=>`<tr><th>${esc(x[0])}</th><td>${esc(x[1]).replace(/\n/g,'<br>')}</td></tr>`).join('')}</tbody></table>`:''}
  ${d.discussion?`<h2>5. 실습 고찰</h2><p>${esc(d.discussion).replace(/\n/g,'<br>')}</p>`:''}
@@ -397,7 +403,7 @@ $('exportPdf').onclick=()=>{
  let html=makePdfHtml(d).replace(/<script>[\s\S]*?<\/script>/,'');
  w.document.open();w.document.write(html);w.document.close();
  const script=w.document.createElement('script');script.src='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
- script.onload=async()=>{try{const images=[...w.document.images];await Promise.all(images.map(im=>im.decode?im.decode().catch(()=>{}):Promise.resolve()));await w.html2pdf().set({margin:10,filename:(d.product||'obakery_assignment').replace(/[\\/:*?"<>|]/g,'_')+'_OBAKERY.pdf',image:{type:'jpeg',quality:.96},html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff'},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},pagebreak:{mode:['css','legacy']}}).from(w.document.body).save();}catch(err){alert('PDF 파일 생성에 실패했습니다. 인쇄 기능으로 저장을 시도해 주세요.');w.print();}};
+ script.onload=async()=>{try{const images=[...w.document.images];await Promise.all(images.map(im=>im.decode?im.decode().catch(()=>{}):Promise.resolve()));await w.html2pdf().set({margin:[12,12,14,12],filename:(d.product||'obakery_assignment').replace(/[\\/:*?"<>|]/g,'_')+'_OBAKERY.pdf',image:{type:'jpeg',quality:.96},html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff',scrollY:0},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},pagebreak:{mode:['css','legacy'],avoid:['h1','h2','h3','tr','figure','.stage','.ingredient-photos']}}).from(w.document.body).save();}catch(err){alert('PDF 파일 생성에 실패했습니다. 인쇄 기능으로 저장을 시도해 주세요.');w.print();}};
  script.onerror=()=>{alert('PDF 생성 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.');w.print();};w.document.head.appendChild(script);
 };
 
@@ -419,7 +425,7 @@ async function addImageFit(slide,data,x,y,w,h){
 }
 let s=pptx.addSlide();s.background={color:dark};addText(s,'BAKERY · PASTRY · PRACTICE',.85,.85,11,.3,{size:11,bold:true,color:'D7B895',charSpacing:2});addText(s,d.product, .85,1.7,11.5,1.15,{size:34,bold:true,color:'FFFFFF'});addText(s,'실습 과제 보고서',.88,3.05,8,.45,{size:20,color:'E3E7E2'});s.addShape(pptx.ShapeType.line,{x:.88,y:4.1,w:11.3,h:0,line:{color:gold,width:1.5}});const submitter=[d.studentName,d.studentDepartment,d.studentId].filter(Boolean).join('  |  ');if(submitter)addText(s,submitter,.88,4.42,11,.35,{size:15,color:'FFFFFF'});if(String(d.date||'').trim())addText(s,d.date,.88,5.0,6,.25,{size:11,color:'D5DDD7'});
 s=pptx.addSlide();base(s,'01 · Product overview','제품 소개');addText(s,d.product, .8,1.95,11.6,.65,{size:29,bold:true});addText(s,'품목명',.82,2.9,2,.3,{size:12,bold:true,color:gold});addText(s,d.product,2.4,2.85,9,.4,{size:17});if(d.className)addText(s,'수업명: '+d.className,.82,3.55,10,.35,{size:14,color:muted});const submitterInfo=[d.studentName,d.studentDepartment,d.studentId].filter(Boolean).join(' / ');if(submitterInfo)addText(s,'제출자: '+submitterInfo,.82,4.2,11,.4,{size:15,color:dark});
-const filledIngredients=(d.ingredients||[]).filter(v=>(String(v.name||'').trim()!=='')||(String(v.grams??'').trim()!==''));const filledToppings=(d.toppings||[]).filter(v=>(String(v.name||'').trim()!=='')||(String(v.grams??'').trim()!==''));if(filledIngredients.length||filledToppings.length){s=pptx.addSlide();base(s,'02 · Ingredients & weighing','재료 계량 및 배합표');const flourTotal=filledIngredients.filter(v=>v.kind==='flour').reduce((a,v)=>a+(Number(v.grams)||0),0);const doughTotal=filledIngredients.reduce((a,v)=>a+(Number(v.grams)||0),0);if(flourTotal>0)addText(s,'밀가루 총량 '+flourTotal.toLocaleString('ko-KR')+' g = 100%  |  반죽 총중량 '+doughTotal.toLocaleString('ko-KR')+' g',.85,1.72,11.4,.32,{size:13,bold:true,color:gold});const rows=[['재료명','사용량 (g)','밀가루 기준 %','총중량 대비 %']];filledIngredients.forEach(v=>{const grams=String(v.grams??'').trim();const amount=Number(grams)||0;rows.push([String(v.name||''),grams,grams!==''&&flourTotal>0?(amount/flourTotal*100).toFixed(1)+'%':'',grams!==''&&doughTotal>0?(amount/doughTotal*100).toFixed(1)+'%':'']);});filledToppings.forEach(v=>rows.push(['토핑 · '+String(v.name||''),String(v.grams??''),'—','—']));rows.push(['반죽 총중량',doughTotal.toLocaleString('ko-KR')+' g','—','100%']);s.addTable(rows,{x:.8,y:2.12,w:11.7,h:Math.min(4.65,Math.max(1.05,rows.length*.36)),border:{type:'solid',color:'DCD7CA',pt:.6},fill:'FFFFFF',color:dark,fontFace:'Aptos',fontSize:10,breakLine:false,margin:0.06,autoFit:false,colW:[4.0,2.0,2.8,2.9],rowH:0.32});}
+const filledIngredients=(d.ingredients||[]).filter(v=>(String(v.name||'').trim()!=='')||(String(v.grams??'').trim()!==''));const filledToppings=(d.toppings||[]).filter(v=>(String(v.name||'').trim()!=='')||(String(v.grams??'').trim()!==''));if(filledIngredients.length||filledToppings.length){s=pptx.addSlide();base(s,'02 · Ingredients & weighing','재료 계량 및 배합표');const flourTotal=filledIngredients.filter(v=>v.kind==='flour').reduce((a,v)=>a+(Number(v.grams)||0),0);const doughTotal=filledIngredients.reduce((a,v)=>a+(Number(v.grams)||0),0);if(flourTotal>0)addText(s,'밀가루 총량 '+flourTotal.toLocaleString('ko-KR')+' g = 100%  |  반죽 총중량 '+doughTotal.toLocaleString('ko-KR')+' g',.85,1.72,11.4,.32,{size:13,bold:true,color:gold});const rows=[['재료명','사용량 (g)','베이커스 퍼센트 (%)']];filledIngredients.forEach(v=>{const grams=String(v.grams??'').trim();const amount=Number(grams)||0;rows.push([String(v.name||''),grams,grams!==''&&flourTotal>0?(amount/flourTotal*100).toFixed(1)+'%':'']);});filledToppings.forEach(v=>rows.push(['토핑 · '+String(v.name||''),String(v.grams??''),'—']));rows.push(['반죽 총중량',doughTotal.toLocaleString('ko-KR')+' g',flourTotal>0?(doughTotal/flourTotal*100).toFixed(1)+'%':'—']);s.addTable(rows,{x:.8,y:2.12,w:11.7,h:Math.min(4.65,Math.max(1.05,rows.length*.36)),border:{type:'solid',color:'DCD7CA',pt:.6},fill:'FFFFFF',color:dark,fontFace:'Aptos',fontSize:10,breakLine:false,margin:0.06,autoFit:false,colW:[5.2,2.7,3.8],rowH:0.32});}
 if(partAttachments.ingredients.length){for(let k=0;k<partAttachments.ingredients.length;k++){const im=partAttachments.ingredients[k];s=pptx.addSlide();s.background={color:cream};await addImageFit(s,im.data,.55,.55,12.25,6.35);}}
 
 const completedStages=(d.processStages||[]).filter(v=>[v.title,v.detail,v.temperature,v.time,v.point].some(x=>String(x||'').trim())||(v.images&&v.images.length));
