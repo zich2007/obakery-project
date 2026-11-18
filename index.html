@@ -151,17 +151,24 @@ function loadScriptFrom(url){
  });
 }
 async function ensurePptxGen(){
- if(window.pptxgen||window.PptxGenJS){window.pptxgen=window.pptxgen||window.PptxGenJS;return window.pptxgen}
+ const getCtor=()=>{
+  const candidate=window.pptxgen||window.PptxGenJS||window.PptxGen;
+  if(typeof candidate==='function')return candidate;
+  if(candidate&&typeof candidate.default==='function')return candidate.default;
+  return null;
+ };
+ let ctor=getCtor();if(ctor)return ctor;
  const urls=[
   'https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js',
-  'https://unpkg.com/pptxgenjs@3.12.0/dist/pptxgen.bundle.js'
+  'https://unpkg.com/pptxgenjs@3.12.0/dist/pptxgen.bundle.js',
+  'https://cdn.jsdelivr.net/gh/gitbrent/PptxGenJS@3.12.0/dist/pptxgen.bundle.js'
  ];
- let lastError;
+ let errors=[];
  for(const url of urls){
-  try{await loadScriptFrom(url);const lib=window.pptxgen||window.PptxGenJS;if(lib){window.pptxgen=lib;return lib}}
-  catch(err){lastError=err}
+  try{await loadScriptFrom(url);ctor=getCtor();if(ctor)return ctor;errors.push(url+' 로드됐지만 생성자 전역 변수를 찾지 못함');}
+  catch(err){errors.push(url+' : '+err.message);}
  }
- throw new Error('PPT 생성 라이브러리를 불러오지 못했습니다. 인터넷 연결 또는 브라우저의 콘텐츠 차단 설정을 확인해 주세요.'+(lastError?' ('+lastError.message+')':''));
+ throw new Error('PPT 라이브러리 로딩에 실패했습니다. 인터넷 연결을 확인하거나 Safari 콘텐츠 차단을 해제한 뒤 다시 시도해 주세요. 상세: '+errors.join(' | '));
 }
 async function ensureJSZip(){
  if(window.JSZip)return window.JSZip;
@@ -343,7 +350,8 @@ function makePdfHtml(d){
  const ingredientRows=(d.ingredients||[]).map(it=>`<tr><td>${esc(it.name||'')}</td><td>${esc(it.grams||0)} g</td><td>${it.kind==='flour'?'밀가루':'일반 재료'}</td></tr>`).join('');
  const stages=(d.processStages||[]).filter(x=>x.title||x.detail||x.temperature||x.time||x.point).map((x,i)=>`<section class="stage"><h3>${i+1}. ${esc(x.title||'공정 단계')}</h3>${x.detail?`<p>${esc(x.detail).replace(/\n/g,'<br>')}</p>`:''}${x.temperature?`<p><b>온도 및 조건:</b> ${esc(x.temperature)}</p>`:''}${x.time?`<p><b>소요 시간:</b> ${esc(x.time)}</p>`:''}${x.point?`<p><b>주의사항:</b> ${esc(x.point).replace(/\n/g,'<br>')}</p>`:''}${(x.images||[]).map(im=>`<img class="photo" src="${im.data}" alt="${esc(im.name||'공정 사진')}">`).join('')}</section>`).join('');
  const attach=(d.attachments||{});
- const attachmentHtml=[...(attach.ingredients||[]).map(x=>({...x,group:'재료표 및 배합표'})),...(attach.sensory||[]).map(x=>({...x,group:'관능평가 참고'})),...(attach.discussion||[]).map(x=>({...x,group:'고찰 참고'}))];
+ const ingredientImageBlock=(attach.ingredients||[]).length?`<h3 class="subhead">재료표 · 배합표 원본 이미지</h3><div class="photos ingredient-photos">${(attach.ingredients||[]).map(im=>`<figure><img class="photo ingredient-photo" src="${im.data}" alt="${esc(im.name||'재료표 이미지')}"><figcaption>${esc(im.name||'재료표 이미지')}</figcaption></figure>`).join('')}</div>`:'';
+ const attachmentHtml=[...(attach.sensory||[]).map(x=>({...x,group:'관능평가 참고'})),...(attach.discussion||[]).map(x=>({...x,group:'고찰 참고'}))];
  const attachmentBlock=attachmentHtml.length?`<h2>첨부 이미지</h2><div class="photos">${attachmentHtml.map(im=>`<figure><img class="photo" src="${im.data}" alt="${esc(im.name||'첨부 이미지')}"><figcaption>${esc(im.group)} · ${esc(im.name||'이미지')}</figcaption></figure>`).join('')}</div>`:'';
  const senses=[['내부 조직',d.senseOrganization],['기공',d.senseCrumb],['속색',d.senseInnerColor],['향',d.senseAroma],['맛',d.senseTaste],['부피',d.senseVolume],['껍질색',d.senseCrustColor],['외형 균형',d.senseBalance],['굽기의 균일함',d.senseBaking],['파쇄성',d.senseFracturability]].filter(x=>x[1]);
  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${esc(d.product||'실습 과제')} - O.BAKERY PROJECT</title><style>
@@ -352,19 +360,20 @@ function makePdfHtml(d){
  h3{font-size:13pt;margin:0 0 3mm}p{margin:2mm 0;font-size:10.5pt}.cover{padding:20mm 0 12mm;border-bottom:3px solid #a7835f;margin-bottom:8mm}
  .meta{color:#68746d;font-size:10pt}.stage{break-inside:avoid;border:1px solid #e7e4db;border-radius:8px;padding:5mm;margin:4mm 0}
  table{width:100%;border-collapse:collapse;font-size:10pt}th,td{border:1px solid #ddd;padding:7px;text-align:left}th{background:#f2eee6}
- .photo{max-width:100%;max-height:95mm;object-fit:contain;margin:3mm 2mm 0 0}.photos{display:flex;flex-wrap:wrap;gap:5mm}figure{width:46%;margin:0 0 5mm;break-inside:avoid}figcaption{font-size:9pt;color:#68746d}
+ .photo{max-width:100%;max-height:95mm;object-fit:contain;margin:3mm 2mm 0 0}.photos{display:flex;flex-wrap:wrap;gap:5mm}
+ .subhead{font-size:12pt;margin:5mm 0 2mm;color:#9b7652}.ingredient-photos{margin:0 0 5mm;break-inside:avoid}.ingredient-photo{max-height:75mm;width:100%;object-fit:contain}.ingredient-photos figure{width:100%;break-inside:avoid}figure{width:46%;margin:0 0 5mm;break-inside:avoid}figcaption{font-size:9pt;color:#68746d}
  .muted{color:#68746d}.note{background:#f7f5ef;padding:4mm;border-left:3px solid #a7835f}
  @media print{button{display:none}}
  </style></head><body>
  <div class="cover"><div class="meta">O.BAKERY PROJECT · BAKERY / PASTRY PRACTICE</div><h1>${esc(d.product||'실습 과제')}</h1><p>제과·제빵 실습 기록 및 결과 보고서</p><p class="meta">${esc([d.studentName,d.studentDepartment,d.studentId].filter(Boolean).join(' · '))}${d.date?' · '+esc(d.date):''}${d.className?' · '+esc(d.className):''}</p></div>
  <h2>1. 제품 정보</h2><p><b>제품명:</b> ${esc(d.product||'미입력')}</p>${d.className?`<p><b>수업명:</b> ${esc(d.className)}</p>`:''}
- ${ingredientRows?`<h2>2. 재료 계량 및 배합표</h2><table><thead><tr><th>재료명</th><th>사용량</th><th>구분</th></tr></thead><tbody>${ingredientRows}</tbody></table>`:''}
+ ${ingredientRows?`<h2>2. 재료 계량 및 배합표</h2><table><thead><tr><th>재료명</th><th>사용량</th><th>구분</th></tr></thead><tbody>${ingredientRows}</tbody></table>`:''}${ingredientImageBlock}
  ${stages?`<h2>3. 제조 공정</h2>${stages}`:''}
  ${senses.length?`<h2>4. 관능평가</h2><table><tbody>${senses.map(x=>`<tr><th>${esc(x[0])}</th><td>${esc(x[1]).replace(/\n/g,'<br>')}</td></tr>`).join('')}</tbody></table>`:''}
  ${d.discussion?`<h2>5. 실습 고찰</h2><p>${esc(d.discussion).replace(/\n/g,'<br>')}</p>`:''}
  ${attachmentBlock}
  <p class="muted" style="margin-top:12mm;font-size:8pt">O.BAKERY PROJECT · 본 문서는 입력된 실습 기록을 바탕으로 생성되었습니다.</p>
- <script>window.addEventListener('load',()=>setTimeout(()=>window.print(),700));<\/script></body></html>`;
+ <script>window.addEventListener('load',async()=>{const imgs=[...document.images];await Promise.all(imgs.map(im=>im.decode?im.decode().catch(()=>{}):Promise.resolve()));setTimeout(()=>window.print(),250)});<\/script></body></html>`;
 }
 $('exportPdf').onclick=()=>{
  const d=data();if(!d.product){alert('제품 품목명을 입력해 주세요.');$('product').focus();return}
@@ -376,8 +385,8 @@ function updateProfilePreview(){const d=data();$('previewName').textContent=d.st
 ['studentName','studentDepartment','studentId'].forEach(id=>$(id).addEventListener('input',updateProfilePreview));
 updateProfilePreview();
 function addText(slide,text,x,y,w,h,opt={}){slide.addText(text,{x,y,w,h,fontFace:'Aptos',fontSize:opt.size||18,color:opt.color||'26332F',breakLine:false,margin:0,fit:'shrink',valign:'mid',bold:!!opt.bold,...opt})}
-$('export').onclick=async()=>{const d=data();if(!d.product){alert('제품 품목명을 입력해 주세요.');$('product').focus();return}if(typeof pptxgen==='undefined'){alert('PPT 생성 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.');return}
-const pptx=new pptxgen();pptx.layout='LAYOUT_WIDE';pptx.author=d.studentName||'O.BAKERY PROJECT';pptx.subject=(d.studentDepartment?d.studentDepartment+' ':'')+'실습 과제';pptx.title=d.product+' 실습 과제';pptx.company='O.BAKERY PROJECT';pptx.lang='ko-KR';pptx.theme={headFontFace:'Aptos Display',bodyFontFace:'Aptos',lang:'ko-KR'};
+$('export').onclick=async()=>{const d=data();if(!d.product){alert('제품 품목명을 입력해 주세요.');$('product').focus();return}let PptxCtor;try{PptxCtor=await ensurePptxGen();}catch(err){alert(err.message);return}
+const pptx=new PptxCtor();pptx.layout='LAYOUT_WIDE';pptx.author=d.studentName||'O.BAKERY PROJECT';pptx.subject=(d.studentDepartment?d.studentDepartment+' ':'')+'실습 과제';pptx.title=d.product+' 실습 과제';pptx.company='O.BAKERY PROJECT';pptx.lang='ko-KR';pptx.theme={headFontFace:'Aptos Display',bodyFontFace:'Aptos',lang:'ko-KR'};
 const dark='26332F',gold='A7835F',cream='F7F5EF',muted='707B74';
 function base(slide,kicker,title){slide.background={color:cream};addText(slide,kicker.toUpperCase(),.65,.38,11.8,.25,{size:9,bold:true,color:gold,charSpacing:2});addText(slide,title,.65,.82,11.8,.6,{size:27,bold:true,color:dark});slide.addShape(pptx.ShapeType.line,{x:.65,y:1.58,w:12,h:0,line:{color:'DCD7CA',width:1}});addText(slide,'O.BAKERY PROJECT',.65,7.12,5,.18,{size:8,color:muted});}
 let s=pptx.addSlide();s.background={color:dark};addText(s,'BAKERY · PASTRY · PRACTICE',.85,.85,11,.3,{size:11,bold:true,color:'D7B895',charSpacing:2});addText(s,d.product, .85,1.7,11.5,1.15,{size:34,bold:true,color:'FFFFFF'});addText(s,'실습 과제 보고서',.88,3.05,8,.45,{size:20,color:'E3E7E2'});s.addShape(pptx.ShapeType.line,{x:.88,y:4.1,w:11.3,h:0,line:{color:gold,width:1.5}});const submitter=[d.studentName,d.studentDepartment,d.studentId].filter(Boolean).join('  |  ');if(submitter)addText(s,submitter,.88,4.42,11,.35,{size:15,color:'FFFFFF'});addText(s,d.date||'실습 날짜 미기재',.88,5.0,6,.25,{size:11,color:'D5DDD7'});
