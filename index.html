@@ -103,6 +103,17 @@ body[data-theme="dark"] .ocr-panel{background:#1b231f;border-color:var(--line)}b
 .ocr-check{display:flex;align-items:center;gap:8px;margin:10px 0;color:var(--muted);font-size:12px}
 .ocr-check input{width:auto;margin:0}
 </style>
+
+<style>
+.ai-panel{border:1px solid var(--accent);border-radius:14px;padding:16px;margin:14px 0;background:var(--panel,rgba(255,255,255,.45))}
+.ai-panel .ai-title{display:flex;align-items:center;gap:8px;font-weight:800;font-size:16px;margin-bottom:7px}
+.ai-consent{display:flex;gap:9px;align-items:flex-start;margin:12px 0;font-size:13px;line-height:1.55}
+.ai-consent input{width:auto;min-width:17px;margin-top:3px}
+.ai-actions{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.ai-review{width:100%;min-height:210px;font-family:ui-monospace,monospace;font-size:12px;line-height:1.5}
+.ai-status{font-size:13px;margin:8px 0;color:var(--muted)}
+.ai-warning{font-size:12px;line-height:1.6;padding:10px;border-radius:9px;background:rgba(180,120,40,.10)}
+</style>
 </head>
 <body>
 <header><div class="top"><div class="brand">O.BAKERY PROJECT</div><div class="top-actions"><button type="button" class="theme-toggle" id="themeToggle" aria-pressed="false">🌙 다크모드</button><div class="pill">MY ASSIGNMENT STUDIO · VERSION 5.19</div></div></div>
@@ -128,6 +139,17 @@ body[data-theme="dark"] .ocr-panel{background:#1b231f;border-color:var(--line)}b
 <label for="product">제품 품목명 *</label><input id="product" placeholder="예: 소금빵, 마들렌, 크루아상">
 <div class="two"><div><label for="date">실습 날짜</label><input id="date" type="date"></div><div><label for="className">수업명 (선택)</label><input id="className" placeholder="예: 제과실습"></div></div>
 <div class="part-upload"><strong>재료표 · 배합표 이미지 첨부</strong><span class="hint">직접 제작한 재료표, 배합표, 베이커스 퍼센트 정리 이미지를 등록하세요.</span><input id="ingredientImages" type="file" accept="image/*" multiple><div class="attachment-preview" id="ingredientPreview"></div></div>
+<div class="ai-panel" id="ingredientAiPanel">
+ <div class="ai-title">✨ Gemini AI 재료표 분석</div>
+ <p class="hint">재료표 사진을 AI가 직접 읽어 재료명·중량·밀가루 구분·토핑 여부를 구조화합니다. 결과는 검토 후에만 배합표에 반영됩니다.</p>
+ <div style="margin:10px 0"><label for="aiApiUrl">AI 서버 주소 (Vercel 배포 후 입력)</label><div style="display:flex;gap:8px;flex-wrap:wrap"><input id="aiApiUrl" placeholder="https://프로젝트명.vercel.app/api/analyze" style="flex:1;min-width:220px"><button type="button" class="ghost" id="saveAiApiUrl">서버 주소 저장</button></div><span class="hint">GitHub Pages를 계속 사용할 경우 Vercel API 주소를 입력하세요. 같은 Vercel 프로젝트에서 사이트와 API를 함께 배포하면 비워두어도 됩니다.</span></div>
+ <input id="ingredientAiFile" type="file" accept="image/jpeg,image/png,image/webp" multiple>
+ <label class="ai-consent"><input type="checkbox" id="ingredientAiConsent"><span><b>사진 전송에 동의합니다.</b><br>선택한 사진이 Google Gemini API로 전송됩니다. 무료 등급에서는 제출 콘텐츠가 Google 제품 개선에 사용될 수 있습니다. 민감한 정보가 포함된 사진은 올리지 마세요.</span></label>
+ <div class="ai-actions"><button type="button" class="ghost" id="runIngredientAi">AI로 재료표 분석</button><button type="button" class="secondary" id="applyIngredientAi" disabled>검토한 재료를 배합표에 반영</button></div>
+ <div class="ai-status" id="ingredientAiStatus">사진을 선택하고 전송 동의 후 분석하세요.</div>
+ <label for="ingredientAiResult">AI 분석 결과 (JSON · 직접 수정 가능)</label><textarea id="ingredientAiResult" class="ai-review" placeholder="분석 결과가 여기에 표시됩니다."></textarea>
+ <div class="ai-warning">AI가 읽지 못한 숫자나 재료는 임의로 추정하지 않습니다. 중량이 불명확한 항목은 빈 값으로 표시될 수 있으니 원본 사진과 대조하세요.</div>
+</div>
 <div class="part-upload ocr-panel" id="ingredientOcrPanel">
  <strong>재료표 사진 글자 인식 (OCR)</strong>
  <span class="hint">사진을 확대·보정한 뒤 여러 방식으로 인식하고, 결과 중 신뢰도가 높은 내용을 선택합니다. 결과를 확인하고 수정한 뒤 배합표에 반영하세요.</span><label class="ocr-check"><input type="checkbox" id="ingredientOcrMulti" checked> 사진 보정 및 다중 인식 사용</label>
@@ -173,6 +195,16 @@ body[data-theme="dark"] .ocr-panel{background:#1b231f;border-color:var(--line)}b
 <div class="panel"><h2><span class="step">04</span>제조 과정 기록</h2><p class="sub">각 공정을 단계별로 기록하세요. 작업 내용뿐 아니라 반죽 상태, 온도, 시간, 주의사항까지 정리할 수 있습니다. 제품에 맞지 않는 단계는 삭제하고 필요한 단계는 추가하세요.</p>
 <div id="processStages" class="process-stages"></div>
 <button type="button" class="secondary" id="addProcessStage">+ 제조 공정 추가</button>
+<div class="ai-panel" id="processAiPanel">
+ <div class="ai-title">✨ Gemini AI 제조공정 분석</div>
+ <p class="hint">공정표·실습 지시서 사진에서 공정명, 작업 내용, 온도, 시간, 주의사항을 구분합니다. 결과는 수정·검토 후에만 공정 기록에 추가됩니다.</p>
+ <input id="processAiFile" type="file" accept="image/jpeg,image/png,image/webp" multiple>
+ <label class="ai-consent"><input type="checkbox" id="processAiConsent"><span><b>사진 전송에 동의합니다.</b><br>선택한 사진이 Google Gemini API로 전송됩니다. 무료 등급에서는 제출 콘텐츠가 Google 제품 개선에 사용될 수 있습니다. 민감한 정보가 포함된 사진은 올리지 마세요.</span></label>
+ <div class="ai-actions"><button type="button" class="ghost" id="runProcessAi">AI로 제조공정 분석</button><button type="button" class="secondary" id="applyProcessAi" disabled>검토한 공정을 기록에 추가</button></div>
+ <div class="ai-status" id="processAiStatus">사진을 선택하고 전송 동의 후 분석하세요.</div>
+ <label for="processAiResult">AI 분석 결과 (JSON · 직접 수정 가능)</label><textarea id="processAiResult" class="ai-review" placeholder="분석 결과가 여기에 표시됩니다."></textarea>
+ <div class="ai-warning">사진에 없는 온도·시간·공정 설명은 만들어내지 않습니다. 읽기 어려운 정보는 빈 값과 검토 사유로 남깁니다.</div>
+</div>
 <div class="part-upload ocr-panel" id="processOcrPanel">
  <strong>제조공정 사진 글자 인식 (OCR)</strong>
  <span class="hint">공정표·실습 지시서 사진을 확대·보정하고 여러 방식으로 인식해 공정 기록 초안으로 정리합니다.</span><label class="ocr-check"><input type="checkbox" id="processOcrMulti" checked> 사진 보정 및 다중 인식 사용</label>
@@ -771,4 +803,47 @@ function parseProcessOcr(text){
 }
 $('applyProcessOcr').addEventListener('click',()=>{const stages=parseProcessOcr($('processOcrText').value);if(!stages.length){alert('공정 내용을 찾지 못했습니다. 인식 결과를 확인해 주세요.');return}stages.forEach(x=>addProcessStage(x));alert(stages.length+'개 공정 초안을 추가했습니다. 내용을 확인해 주세요.')});
 
+
+// O.BAKERY 6.0 — Gemini AI image analysis. API key remains on the Vercel server.
+const AI_MAX_FILES=4, AI_MAX_BYTES=25*1024*1024;
+const AI_API_STORAGE_KEY='obakery_gemini_api_url';
+function getAiApiUrl(){const value=localStorage.getItem(AI_API_STORAGE_KEY)||'';return value.trim()||'/api/analyze';}
+$('aiApiUrl').value=localStorage.getItem(AI_API_STORAGE_KEY)||'';
+$('saveAiApiUrl').addEventListener('click',()=>{const value=$('aiApiUrl').value.trim();if(value&&!/^https:\/\//i.test(value)){alert('서버 주소는 https://로 시작해야 합니다.');return;}localStorage.setItem(AI_API_STORAGE_KEY,value);alert(value?'AI 서버 주소를 저장했습니다.':'기본 주소(/api/analyze)를 사용합니다.');});
+function aiSetStatus(id,msg){const el=$(id);if(el)el.textContent=msg;}
+async function aiReadFile(file){
+ const url=URL.createObjectURL(file);
+ try{const img=await new Promise((resolve,reject)=>{const el=new Image();el.onload=()=>resolve(el);el.onerror=()=>reject(new Error('사진을 열지 못했습니다.'));el.src=url;});
+  const canvas=document.createElement('canvas');let scale=Math.min(1,1600/Math.max(img.naturalWidth,img.naturalHeight));let blob=null;
+  for(let attempt=0;attempt<8;attempt++){canvas.width=Math.max(1,Math.round(img.naturalWidth*scale));canvas.height=Math.max(1,Math.round(img.naturalHeight*scale));const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);const quality=Math.max(.48,.84-attempt*.06);blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',quality));if(blob&&blob.size<=680*1024)break;scale*=.82;}
+  if(!blob||blob.size>750*1024)throw new Error('사진을 충분히 압축하지 못했습니다. 해상도를 낮추거나 사진 수를 줄여 주세요.');
+  const data=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result).split(',')[1]||'');r.onerror=()=>reject(new Error('압축 사진을 읽지 못했습니다.'));r.readAsDataURL(blob)});
+  return {mimeType:'image/jpeg',data,name:file.name};
+ }finally{URL.revokeObjectURL(url);}
+}
+async function runGeminiAnalysis(type){
+ const isIng=type==='ingredients',fileId=isIng?'ingredientAiFile':'processAiFile',consentId=isIng?'ingredientAiConsent':'processAiConsent',statusId=isIng?'ingredientAiStatus':'processAiStatus',resultId=isIng?'ingredientAiResult':'processAiResult',buttonId=isIng?'runIngredientAi':'runProcessAi',applyId=isIng?'applyIngredientAi':'applyProcessAi';
+ const files=Array.from($(fileId).files||[]);$(applyId).disabled=true;
+ if(!$(consentId).checked){alert('사진을 Gemini로 전송하려면 전송 동의에 체크해야 합니다.');return;}
+ if(!files.length){alert('분석할 사진을 먼저 선택해 주세요.');return;}
+ if(files.length>AI_MAX_FILES){alert('한 번에 최대 '+AI_MAX_FILES+'장까지 분석할 수 있습니다.');return;}
+ if(files.some(f=>!/^image\/(jpeg|png|webp)$/.test(f.type))){alert('JPG, PNG, WEBP 사진만 사용할 수 있습니다. HEIC 사진은 JPG로 변환해 주세요.');return;}
+ if(files.some(f=>f.size>AI_MAX_BYTES)){alert('원본 사진 한 장당 최대 25MB까지 지원합니다.');return;}
+ const btn=$(buttonId);btn.disabled=true;aiSetStatus(statusId,'사진을 준비하고 AI에 분석을 요청하고 있습니다…');
+ try{
+  const images=await Promise.all(files.map(aiReadFile));
+  const response=await fetch(getAiApiUrl(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type,images,consent:true})});
+  const payload=await response.json().catch(()=>({error:'서버 응답을 해석하지 못했습니다.'}));
+  if(!response.ok)throw new Error(payload.error||('요청 실패 (HTTP '+response.status+')'));
+  const data=payload.result||{};$(resultId).value=JSON.stringify(data,null,2);$(applyId).disabled=false;
+  const count=isIng?(data.ingredients||[]).length:(data.stages||[]).length;
+  aiSetStatus(statusId,'분석 완료: '+count+'개 항목을 추출했습니다. 반드시 원본 사진과 대조한 뒤 반영하세요.');
+ }catch(err){aiSetStatus(statusId,'분석 실패: '+err.message);alert('AI 분석에 실패했습니다.\n'+err.message+'\n\n무료 사용 한도 또는 API 설정을 확인하거나 기존 OCR/수동 입력을 이용해 주세요.');}
+ finally{btn.disabled=false;}
+}
+function parseAiJson(id){try{return JSON.parse($(id).value)}catch(e){throw new Error('JSON 형식이 올바르지 않습니다. 괄호와 쉼표를 확인해 주세요.');}}
+$('runIngredientAi').addEventListener('click',()=>runGeminiAnalysis('ingredients'));
+$('runProcessAi').addEventListener('click',()=>runGeminiAnalysis('process'));
+$('applyIngredientAi').addEventListener('click',()=>{try{const data=parseAiJson('ingredientAiResult');if(!Array.isArray(data.ingredients)||!data.ingredients.length)throw new Error('반영할 재료가 없습니다.');const items=data.ingredients.filter(x=>x.usage==='dough'&&x.name&&x.grams!==null&&x.grams!==undefined&&Number.isFinite(Number(x.grams))).map(x=>({name:String(x.name),grams:Number(x.grams),kind:x.kind==='flour'?'flour':'other'}));const toppings=(data.ingredients||[]).filter(x=>x.usage==='topping'&&x.name&&x.grams!==null&&Number.isFinite(Number(x.grams))).map(x=>({name:String(x.name),grams:Number(x.grams)}));if(!items.length&&!toppings.length)throw new Error('중량과 사용 구분이 확인된 재료가 없습니다. usage가 unknown인 항목은 직접 확인한 뒤 사용 구분을 dough 또는 topping으로 수정해 주세요.');if(items.length)setIngredientItems(getIngredientItems().filter(x=>x.name||x.grams).concat(items));if(toppings.length)setToppingItems(getToppingItems().filter(x=>x.name||x.grams).concat(toppings));alert('재료 '+items.length+'개, 토핑 '+toppings.length+'개를 추가했습니다. 밀가루 구분과 중량을 다시 확인해 주세요.');}catch(e){alert(e.message)}});
+$('applyProcessAi').addEventListener('click',()=>{try{const data=parseAiJson('processAiResult');if(!Array.isArray(data.stages)||!data.stages.length)throw new Error('반영할 공정이 없습니다.');const stages=data.stages.map(x=>({title:String(x.title||''),detail:String(x.detail||''),temperature:String(x.temperature||''),time:String(x.time||''),point:String(x.point||'')})).filter(x=>x.title||x.detail||x.temperature||x.time||x.point);if(!stages.length)throw new Error('공정 내용이 비어 있습니다.');stages.forEach(x=>addProcessStage(x));alert(stages.length+'개 공정을 추가했습니다. 공정 순서와 조건을 확인해 주세요.');}catch(e){alert(e.message)}});
 </script></body></html>
