@@ -448,7 +448,7 @@ $('exportPdf').onclick=async()=>{
   }));
   const filename=(d.product||'obakery_assignment').replace(/[\\/:*?"<>|]/g,'_')+'_OBAKERY.pdf';
   const worker=html2pdf().set({
-   margin:[12,12,14,12],
+   margin:12,
    filename,
    image:{type:'jpeg',quality:.94},
    html2canvas:{
