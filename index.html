@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>O.BAKERY PROJECT 5.7 | Assignment Studio</title>
+<title>O.BAKERY PROJECT 5.19 | Assignment Studio</title>
 <style>
 :root{--ink:#26332f;--muted:#78827d;--cream:#f7f5ef;--paper:#fffefa;--line:#e7e4db;--accent:#9b7652;--sage:#e7eee7}
 *{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,"Noto Sans KR",Arial,sans-serif}
@@ -51,11 +51,56 @@ button{border:0;border-radius:11px;padding:13px 16px;font-weight:800;cursor:poin
 .other-file-name{font-size:12px;font-weight:800;overflow-wrap:anywhere}
 .other-file-meta{font-size:11px;color:var(--muted);margin-top:3px}
 .other-file-card .remove-photo{flex:0 0 auto}
+
+.top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.theme-toggle{background:#ffffff18;color:#fff;border:1px solid #ffffff55;border-radius:99px;padding:8px 13px;font-size:12px}
+.hero-art{width:100%;border:0;cursor:pointer;transition:transform .18s ease,filter .18s ease;user-select:none;-webkit-tap-highlight-color:transparent}
+.hero-art:active{transform:scale(.96)}
+.hero-art:focus-visible,.theme-toggle:focus-visible{outline:3px solid #d7b895;outline-offset:3px}
+body[data-theme="dark"]{--ink:#e8ece8;--muted:#aab4ad;--cream:#171c1a;--paper:#222a26;--line:#39443e;--accent:#c6a27d;--sage:#34433a;background:var(--cream);color:var(--ink)}
+body[data-theme="dark"] header{background:#111714}
+body[data-theme="dark"] .hero-art{background:linear-gradient(135deg,#5d5144,#292d29);box-shadow:inset 0 0 0 1px #ffffff20}
+body[data-theme="dark"] .panel,
+body[data-theme="dark"] .process-stage,
+body[data-theme="dark"] .classification-card{background:var(--paper);color:var(--ink);border-color:var(--line)}
+body[data-theme="dark"] input,
+body[data-theme="dark"] textarea,
+body[data-theme="dark"] select{background:#171e1a;color:var(--ink);border-color:#46534b}
+body[data-theme="dark"] input::placeholder,
+body[data-theme="dark"] textarea::placeholder{color:#87948b}
+body[data-theme="dark"] .drop,
+body[data-theme="dark"] .part-upload,
+body[data-theme="dark"] .ingredient-table-wrap,
+body[data-theme="dark"] .profile,
+body[data-theme="dark"] .topping-section{background:#1b231f;border-color:var(--line);color:var(--ink)}
+body[data-theme="dark"] .attachment-thumb,
+body[data-theme="dark"] .other-file-card{background:#1b231f;border-color:var(--line);color:var(--ink)}
+body[data-theme="dark"] #ingredientTable th,
+body[data-theme="dark"] #toppingTable th{background:#303b34;color:#e8ece8}
+body[data-theme="dark"] #ingredientTable td,
+body[data-theme="dark"] #toppingTable td{border-color:var(--line)}
+body[data-theme="dark"] .ghost,
+body[data-theme="dark"] .ingredient-actions button{background:#39463e;color:#e8ece8}
+body[data-theme="dark"] .secondary{background:#39463e;color:#e8ece8}
+body[data-theme="dark"] .primary{background:#c6a27d;color:#1c211e}
+body[data-theme="dark"] .remove-upload,
+body[data-theme="dark"] .ingredient-clear,
+body[data-theme="dark"] .process-stage .remove-stage,
+body[data-theme="dark"] #ingredientTable .delete-ingredient,
+body[data-theme="dark"] #toppingTable .delete-ingredient{background:#493536;color:#f1dada}
+body[data-theme="dark"] #v5Workspace{background:linear-gradient(135deg,#242b26,#30291f)!important;border-color:#62513e!important}
+body[data-theme="dark"] #v5Workspace .pill{background:#c6a27d!important;color:#1c211e!important}
+body[data-theme="dark"] #v5Workspace>div[style*="border:1px dashed"]{background:#202722!important;border-color:#62513e!important}
+body[data-theme="dark"] .step{background:#34433a;color:#e8ece8}
+body[data-theme="dark"] .status{border-color:var(--line)}
+body[data-theme="dark"] footer{color:var(--muted)}
+@media(max-width:600px){.top-actions{gap:7px}.theme-toggle{padding:7px 10px}}
+
 </style>
 </head>
 <body>
-<header><div class="top"><div class="brand">O.BAKERY PROJECT</div><div class="pill">MY ASSIGNMENT STUDIO · VERSION 5.14</div></div>
-<div class="hero"><div><div class="eyebrow">BAKERY · PASTRY · PRACTICE</div><h1>실습 기록을 정리하고<br>과제 PPT 완성하기</h1><p>실습 사진 정리부터 재료 배합표 작성, 프로젝트 파일 저장까지<br>제과·제빵 실습 과제 제작을 한 곳에서 진행하세요.</p></div><div class="hero-art">🥐</div></div></header>
+<header><div class="top"><div class="brand">O.BAKERY PROJECT</div><div class="top-actions"><button type="button" class="theme-toggle" id="themeToggle" aria-pressed="false">🌙 다크모드</button><div class="pill">MY ASSIGNMENT STUDIO · VERSION 5.19</div></div></div>
+<div class="hero"><div><div class="eyebrow">BAKERY · PASTRY · PRACTICE</div><h1>실습 기록을 정리하고<br>과제 PPT 완성하기</h1><p>실습 사진 정리부터 재료 배합표 작성, 프로젝트 파일 저장까지<br>제과·제빵 실습 과제 제작을 한 곳에서 진행하세요.</p></div><button type="button" class="hero-art" id="breadEmoji" aria-label="빵 이모지 바꾸기" title="터치해서 다른 빵으로 바꿔보세요">🥐</button></div></header>
 <main>
 <div class="panel" id="v5Workspace" style="border:1px solid #d8c7b2;background:linear-gradient(135deg,#fffefa,#f4eee5)">
  <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap"><div><div class="eyebrow" style="color:#9b7652">VERSION 5.14 · MANUAL REVIEW WORKSPACE</div><h2 style="font-size:22px;margin:7px 0">제작 예정 & 프로젝트 관리</h2><p class="sub" style="margin:0">제작 예정</p></div><span class="pill" style="background:#26332f;color:white;border:0">LOCAL PROJECT</span></div>
@@ -566,4 +611,36 @@ $('saveProject').onclick=async()=>{const d=data();if(!d.product&&!confirm('제�
 $('loadProject').onclick=()=>$('projectFile').click();$('projectFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{let d;if(f.name.endsWith('.obakery')){const ZipCtor=await ensureJSZip();const z=await ZipCtor.loadAsync(f);const file=z.file('project.json');if(!file)throw new Error('project.json이 없습니다.');d=JSON.parse(await file.async('string'))}else d=JSON.parse(await f.text());v5ApplyProject(d);alert('프로젝트를 불러왔습니다.')}catch(err){alert('프로젝트를 열 수 없습니다: '+err.message)}e.target.value=''};
 // Include classified images in the presentation, grouped by user-confirmed stage.
 const oldExportHandler=$('export').onclick;$('export').onclick=async()=>{if(v5Photos.length&&!v5Approved){if(!confirm('사진 분류 결과를 아직 확인 완료하지 않았습니다. 현재 분류 상태로 PPT를 생성할까요?'))return}await oldExportHandler();};
+
+// 화면 꾸미기: 메인 빵 이모지 랜덤 변경 + 다크모드
+(()=>{
+ const breadChoices=['🥐','🥖','🍞','🥯','🥨','🧇','🧁','🍩','🍪','🥧'];
+ const breadButton=document.getElementById('breadEmoji');
+ if(breadButton){
+  breadButton.addEventListener('click',()=>{
+   const current=breadButton.textContent.trim();
+   const choices=breadChoices.filter(x=>x!==current);
+   breadButton.textContent=choices[Math.floor(Math.random()*choices.length)];
+  });
+ }
+ const themeButton=document.getElementById('themeToggle');
+ const applyTheme=(dark)=>{
+  document.body.dataset.theme=dark?'dark':'light';
+  if(themeButton){
+   themeButton.textContent=dark?'☀️ 라이트모드':'🌙 다크모드';
+   themeButton.setAttribute('aria-pressed',String(dark));
+  }
+ };
+ let savedTheme='light';
+ try{savedTheme=localStorage.getItem('obakery-theme')||'light'}catch(e){}
+ applyTheme(savedTheme==='dark');
+ if(themeButton){
+  themeButton.addEventListener('click',()=>{
+   const dark=document.body.dataset.theme!=='dark';
+   applyTheme(dark);
+   try{localStorage.setItem('obakery-theme',dark?'dark':'light')}catch(e){}
+  });
+ }
+})();
+
 </script></body></html>
