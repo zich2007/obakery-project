@@ -121,8 +121,8 @@ module.exports = async (req, res) => {
     const result = await upstream.json().catch(() => ({}));
     if (!upstream.ok) {
       const message = result?.error?.message || 'Gemini API 요청에 실패했습니다.';
-      const status = upstream.status === 429 ? 429 : upstream.status === 400 ? 400 : 502;
-      return send(res, status, { error: upstream.status === 429 ? 'Gemini 무료 사용 한도 또는 요청 제한에 도달했습니다. 잠시 후 다시 시도하거나 기존 OCR을 이용해 주세요.' : message });
+      const status = upstream.status === 429 ? 429 : upstream.status === 400 ? 400 : [408,500,502,503,504].includes(upstream.status) ? upstream.status : 502;
+      return send(res, status, { error: upstream.status === 429 ? 'Gemini 무료 사용 한도 또는 요청 제한에 도달했습니다. 잠시 후 다시 시도하거나 기존 OCR을 이용해 주세요.' : message, retryable: [408,429,500,502,503,504].includes(status) });
     }
     const text = result?.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('');
     if (!text) return send(res, 502, { error: 'AI 응답에 분석 결과가 없습니다. 사진을 다시 촬영해 시도해 주세요.' });
@@ -130,7 +130,7 @@ module.exports = async (req, res) => {
     try { parsed = JSON.parse(text); } catch { return send(res, 502, { error: 'AI 결과를 JSON으로 해석하지 못했습니다. 다시 시도해 주세요.' }); }
     return send(res, 200, { result: parsed, model, usage: result.usageMetadata || null });
   } catch (error) {
-    const message = error.name === 'TimeoutError' ? 'AI 분석 시간이 초과되었습니다. 사진 수를 줄여 다시 시도해 주세요.' : '서버 처리 중 오류가 발생했습니다.';
-    return send(res, 500, { error: message });
+    const message = error.name === 'TimeoutError' ? 'AI 분석 시간이 초과되었습니다. 잠시 후 다시 시도해 주세요.' : '서버 처리 중 오류가 발생했습니다.';
+    return send(res, error.name === 'TimeoutError' ? 504 : 500, { error: message, retryable: true });
   }
 };

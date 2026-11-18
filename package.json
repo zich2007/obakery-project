@@ -1,8 +1,8 @@
 {
   "name": "obakery-project-6",
-  "version": "6.1.0",
+  "version": "6.2.0",
   "private": true,
-  "description": "O.BAKERY PROJECT Gemini AI photo workflow and process records",
+  "description": "O.BAKERY PROJECT Gemini AI sequential photo analysis with retry and partial recovery",
   "engines": {
     "node": ">=20"
   }
