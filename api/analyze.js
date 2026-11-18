@@ -31,6 +31,27 @@ const processSchema = {
   }, required: ['stages','warnings','unreadableItems']
 };
 
+
+const photoClassifySchema = {
+  type: 'OBJECT', properties: {
+    photos: { type: 'ARRAY', items: { type: 'OBJECT', properties: {
+      photoIndex: { type: 'INTEGER' }, category: { type: 'STRING', enum: ['재료 준비 및 계량','반죽 및 믹싱','반죽 상태 확인','1차 발효 및 접기','분할 및 둥글리기','벤치타임','충전','성형','2차 발효','굽기 전 마무리','굽기','냉각 및 마무리','완성품','관능평가','기타 / 미분류'] },
+      description: { type: 'STRING' }, reason: { type: 'STRING' }, confidence: { type: 'NUMBER' }
+    }, required: ['photoIndex','category','description','reason','confidence'] } },
+    warnings: { type: 'ARRAY', items: { type: 'STRING' } }
+  }, required: ['photos','warnings']
+};
+const processRecordSchema = {
+  type: 'OBJECT', properties: {
+    records: { type: 'ARRAY', items: { type: 'OBJECT', properties: {
+      photoIndex: { type: 'INTEGER' }, title: { type: 'STRING' }, detail: { type: 'STRING' },
+      temperature: { type: 'STRING' }, time: { type: 'STRING' }, point: { type: 'STRING' },
+      reason: { type: 'STRING' }, confidence: { type: 'NUMBER' }
+    }, required: ['photoIndex','title','detail','temperature','time','point','reason','confidence'] } },
+    warnings: { type: 'ARRAY', items: { type: 'STRING' } }
+  }, required: ['records','warnings']
+};
+
 function send(res, status, body) {
   res.status(status).setHeader('Content-Type', 'application/json; charset=utf-8');
   res.setHeader('Cache-Control', 'no-store');
@@ -54,7 +75,7 @@ module.exports = async (req, res) => {
   try {
     const body = req.body || {};
     if (body.consent !== true) return send(res, 400, { error: '사진 전송 동의가 확인되지 않았습니다.' });
-    if (!['ingredients','process'].includes(body.type)) return send(res, 400, { error: '분석 유형이 올바르지 않습니다.' });
+    if (!['ingredients','process','photo-classify','process-record'].includes(body.type)) return send(res, 400, { error: '분석 유형이 올바르지 않습니다.' });
     if (!Array.isArray(body.images) || body.images.length < 1 || body.images.length > MAX_IMAGES) {
       return send(res, 400, { error: `사진은 1~${MAX_IMAGES}장까지 선택할 수 있습니다.` });
     }
@@ -72,11 +93,17 @@ module.exports = async (req, res) => {
     if (totalBytes > MAX_TOTAL_BYTES) return send(res, 413, { error: '사진 전체 용량이 제한을 초과했습니다. 사진 수를 줄여 다시 시도해 주세요.' });
 
     const isIngredients = body.type === 'ingredients';
+    const isProcess = body.type === 'process';
+    const isPhotoClassify = body.type === 'photo-classify';
     const prompt = isIngredients
       ? `당신은 제과제빵 실습 재료표 판독 도우미입니다. 첨부 사진의 표와 글자를 읽고 JSON 스키마에 맞게 추출하세요. 규칙: 사진에 실제로 보이는 재료만 기록합니다. 숫자/단위가 불분명하면 grams는 null로 둡니다. g는 숫자 그램으로, kg는 그램으로 환산합니다. 밀가루 종류(강력분/중력분/박력분 등)는 kind=flour, 일반 재료는 other, 확실하지 않으면 unknown. 반죽 재료는 usage=dough, 토핑/충전물/필링 재료는 usage=topping, 분류가 불명확하면 unknown. 재료명과 중량의 원문을 sourceText에 남깁니다. 추측으로 누락된 수치를 채우지 않습니다. 읽기 어려운 항목은 unreadableItems와 warnings에 설명합니다. needsReview는 불확실하거나 사람이 확인해야 하는 항목이면 true입니다.`
-      : `당신은 제과제빵 실습 제조공정표 판독 도우미입니다. 첨부 사진의 공정표와 지시사항을 읽고 JSON 스키마에 맞게 추출하세요. 규칙: 사진에 실제로 보이는 내용만 기록합니다. 공정명은 title, 작업 설명은 detail, 온도/조건은 temperature, 시간은 time, 주의사항은 point에 기록합니다. 사진에 없는 온도·시간·설명은 절대 추측하지 말고 빈 문자열로 둡니다. 여러 단계가 있으면 원래 순서를 유지합니다. 각 단계의 근거 문구를 sourceText에 남깁니다. 불명확하거나 잘린 내용은 needsReview=true로 표시하고 reason에 이유를 씁니다. 판독할 수 없는 내용은 unreadableItems와 warnings에 기록합니다.`;
+      : isProcess
+      ? `당신은 제과제빵 실습 제조공정표 판독 도우미입니다. 첨부 사진의 공정표와 지시사항을 읽고 JSON 스키마에 맞게 추출하세요. 규칙: 사진에 실제로 보이는 내용만 기록합니다. 공정명은 title, 작업 설명은 detail, 온도/조건은 temperature, 시간은 time, 주의사항은 point에 기록합니다. 사진에 없는 온도·시간·설명은 절대 추측하지 말고 빈 문자열로 둡니다. 여러 단계가 있으면 원래 순서를 유지합니다. 각 단계의 근거 문구를 sourceText에 남깁니다. 불명확하거나 잘린 내용은 needsReview=true로 표시하고 reason에 이유를 씁니다. 판독할 수 없는 내용은 unreadableItems와 warnings에 기록합니다.`
+      : isPhotoClassify
+      ? `당신은 제과제빵 실습 사진 분류 전문가입니다. 첨부된 사진 각각을 독립적으로 분석하고 입력 순서대로 photoIndex 0부터 부여하세요. 각 사진이 가장 잘 나타내는 공정 카테고리 하나를 선택합니다. 사진에 실제로 보이는 작업만 판단하고, 사진만으로 알 수 없는 공정 단계는 추측하지 않습니다. category가 명확하지 않으면 기타 / 미분류로 선택합니다. description에는 사진에서 관찰되는 장면을 짧게 설명하고, reason에는 분류 근거를 씁니다. confidence는 0~1 사이의 판단 신뢰도입니다. 사진별 결과를 누락하지 마세요.`
+      : `당신은 제과제빵 실습 제조과정기록 작성 도우미입니다. 첨부된 사진 각각에 대해 입력 순서대로 photoIndex 0부터 하나의 기록 초안을 작성하세요. 사진에서 실제로 관찰되는 행동, 반죽/제품의 외관 상태만 detail에 기록합니다. 공정명은 title, 사진에서 관찰되는 작업은 detail, 온도와 시간은 사진에 명시된 경우에만 각각 temperature와 time에 기록하고, 확인할 수 없으면 빈 문자열로 둡니다. point에는 사진에서 확인 가능한 주의사항만 기록하며 추측하지 않습니다. reason에는 판단 근거와 확인이 필요한 점을 기록합니다. confidence는 0~1입니다. 사진별 결과를 누락하지 마세요. 한 사진을 보고 믹싱 시간, 반죽 온도, 발효 시간 등을 만들어내지 마세요.`;
 
-    const schema = isIngredients ? ingredientSchema : processSchema;
+    const schema = isIngredients ? ingredientSchema : isProcess ? processSchema : isPhotoClassify ? photoClassifySchema : processRecordSchema;
     const parts = [{ text: prompt }, ...imageParts];
     const model = process.env.GEMINI_MODEL || ALLOWED_MODEL;
     if (model !== ALLOWED_MODEL) return send(res, 403, { error: '현재 버전은 무료 우선 모델 gemini-3.5-flash-lite만 허용합니다. Vercel의 GEMINI_MODEL 환경 변수를 확인해 주세요.' });

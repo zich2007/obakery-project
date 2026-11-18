@@ -102,6 +102,20 @@ body[data-theme="dark"] .ocr-panel{background:#1b231f;border-color:var(--line)}b
 
 .ocr-check{display:flex;align-items:center;gap:8px;margin:10px 0;color:var(--muted);font-size:12px}
 .ocr-check input{width:auto;margin:0}
+
+.photo-ai-workflow{margin-top:16px;padding:15px;border:1px solid var(--line);border-radius:13px;background:var(--paper)}
+.photo-ai-workflow h3{margin:0 0 7px;font-size:16px}
+.photo-ai-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-top:12px}
+.photo-ai-item{display:grid;grid-template-columns:100px 1fr;gap:10px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+.photo-ai-item img{width:100px;height:100px;object-fit:cover;border-radius:8px}
+.photo-ai-item label{margin:5px 0 3px}
+.photo-ai-item select{padding:8px;font-size:12px}
+.photo-ai-item textarea{min-height:62px;font-size:12px;padding:8px}
+.photo-ai-item .hint{font-size:11px}
+.photo-ai-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.photo-ai-actions button{width:auto;margin-top:0}
+@media(max-width:560px){.photo-ai-item{grid-template-columns:82px 1fr}.photo-ai-item img{width:82px;height:82px}}
+
 </style>
 
 <style>
@@ -116,13 +130,13 @@ body[data-theme="dark"] .ocr-panel{background:#1b231f;border-color:var(--line)}b
 </style>
 </head>
 <body>
-<header><div class="top"><div class="brand">O.BAKERY PROJECT</div><div class="top-actions"><button type="button" class="theme-toggle" id="themeToggle" aria-pressed="false">🌙 다크모드</button><div class="pill">MY ASSIGNMENT STUDIO · VERSION 5.19</div></div></div>
+<header><div class="top"><div class="brand">O.BAKERY PROJECT</div><div class="top-actions"><button type="button" class="theme-toggle" id="themeToggle" aria-pressed="false">🌙 다크모드</button><div class="pill">MY ASSIGNMENT STUDIO · VERSION 6.1</div></div></div>
 <div class="hero"><div><div class="eyebrow">BAKERY · PASTRY · PRACTICE</div><h1>실습 기록을 정리하고<br>과제 PPT 완성하기</h1><p>실습 사진 정리부터 재료 배합표 작성, 프로젝트 파일 저장까지<br>제과·제빵 실습 과제 제작을 한 곳에서 진행하세요.</p></div><button type="button" class="hero-art" id="breadEmoji" aria-label="빵 이모지 바꾸기" title="터치해서 다른 빵으로 바꿔보세요">🥐</button></div></header>
 <main>
 <div class="panel" id="v5Workspace" style="border:1px solid #d8c7b2;background:linear-gradient(135deg,#fffefa,#f4eee5)">
- <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap"><div><div class="eyebrow" style="color:#9b7652">VERSION 5.14 · MANUAL REVIEW WORKSPACE</div><h2 style="font-size:22px;margin:7px 0">제작 예정 & 프로젝트 관리</h2><p class="sub" style="margin:0">제작 예정</p></div><span class="pill" style="background:#26332f;color:white;border:0">LOCAL PROJECT</span></div>
+ <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap"><div><div class="eyebrow" style="color:#9b7652">VERSION 6.1 · AI PHOTO WORKFLOW</div><h2 style="font-size:22px;margin:7px 0">프로젝트 관리</h2><p class="sub" style="margin:0">AI 사진 분류와 제조공정 기록을 포함한 실습 프로젝트를 관리합니다.</p></div><span class="pill" style="background:#26332f;color:white;border:0">LOCAL PROJECT</span></div>
  <div style="margin-top:22px;min-height:150px;display:flex;align-items:center;justify-content:center;border:1px dashed #d8c7b2;border-radius:14px;background:rgba(255,255,255,.55)">
-  <div style="font-size:20px;font-weight:800;letter-spacing:.08em;color:#9b7652">제작 예정</div>
+  <div style="font-size:20px;font-weight:800;letter-spacing:.04em;color:#9b7652">🥐 O.BAKERY · PRACTICE WORKSPACE</div>
  </div>
  <!-- 기존 프로젝트 파일 호환성을 위해 저장 데이터 렌더링용 요소만 숨겨 유지합니다. -->
  <div hidden><div id="classificationGrid" class="uploads"></div><div id="otherFileGrid" class="uploads"></div><span id="classifyStatus"></span></div>
@@ -191,10 +205,30 @@ body[data-theme="dark"] .ocr-panel{background:#1b231f;border-color:var(--line)}b
 </div>
 <div id="photoGrid" class="uploads" style="margin-top:14px"></div>
 <div class="hint" id="photoCount">선택된 사진 0장</div>
+<div class="photo-ai-workflow" id="photoClassificationAi">
+ <h3>✨ Gemini AI 사진 자동 분류 및 배치</h3>
+ <p class="hint">실습 사진을 여러 장 선택하면 AI가 사진별로 재료 준비, 믹싱, 발효, 분할·성형, 굽기, 완성품 등 적절한 공정을 판단합니다. 사진은 4장씩 나누어 분석할 수 있습니다.</p>
+ <input id="classifyPhotoFiles" type="file" accept="image/jpeg,image/png,image/webp" multiple>
+ <label class="ai-consent"><input type="checkbox" id="classifyPhotoConsent"><span><b>사진 전송에 동의합니다.</b><br>선택한 사진이 Google Gemini API로 전송됩니다. 무료 등급에서는 제출 콘텐츠가 Google 제품 개선에 사용될 수 있습니다.</span></label>
+ <div class="photo-ai-actions"><button type="button" class="ghost" id="runPhotoClassification">사진 자동 분류</button><button type="button" class="secondary" id="applyPhotoClassification" disabled>검토한 사진을 공정별로 배치</button></div>
+ <div class="ai-status" id="classifyPhotoStatus">아직 분석한 사진이 없습니다.</div>
+ <div id="photoClassificationResults" class="photo-ai-grid"></div>
+ <div class="ai-warning">AI가 판단한 공정은 반드시 확인해 주세요. 확신이 낮은 사진은 기타 / 미분류로 표시됩니다. 승인한 사진만 PPT 제조공정 사진에 반영됩니다.</div>
+</div>
 </div>
 <div class="panel"><h2><span class="step">04</span>제조 과정 기록</h2><p class="sub">각 공정을 단계별로 기록하세요. 작업 내용뿐 아니라 반죽 상태, 온도, 시간, 주의사항까지 정리할 수 있습니다. 제품에 맞지 않는 단계는 삭제하고 필요한 단계는 추가하세요.</p>
 <div id="processStages" class="process-stages"></div>
 <button type="button" class="secondary" id="addProcessStage">+ 제조 공정 추가</button>
+<div class="photo-ai-workflow" id="processRecordPhotoAi">
+ <h3>✨ 제조과정기록 · 사진으로 기록 초안 만들기</h3>
+ <p class="hint">반죽, 믹싱, 분할, 성형, 발효, 굽기 등 실제 실습 사진을 올리면 AI가 사진별 공정명과 관찰 가능한 작업 상태를 정리합니다. 사진은 4장씩 분석할 수 있습니다.</p>
+ <input id="processRecordPhotoFiles" type="file" accept="image/jpeg,image/png,image/webp" multiple>
+ <label class="ai-consent"><input type="checkbox" id="processRecordPhotoConsent"><span><b>사진 전송에 동의합니다.</b><br>선택한 사진이 Google Gemini API로 전송됩니다. 무료 등급에서는 제출 콘텐츠가 Google 제품 개선에 사용될 수 있습니다.</span></label>
+ <div class="photo-ai-actions"><button type="button" class="ghost" id="runProcessRecordPhotos">사진으로 공정 기록 정리</button><button type="button" class="secondary" id="applyProcessRecordPhotos" disabled>검토한 기록을 제조과정에 추가</button></div>
+ <div class="ai-status" id="processRecordPhotoStatus">아직 분석한 사진이 없습니다.</div>
+ <div id="processRecordPhotoResults" class="photo-ai-grid"></div>
+ <div class="ai-warning">사진만으로 확인할 수 없는 온도, 시간, 반죽 내부 상태 등은 추측하지 않고 빈칸으로 둡니다. 기존에 작성한 공정 기록은 덮어쓰지 않습니다.</div>
+</div>
 <div class="ai-panel" id="processAiPanel">
  <div class="ai-title">✨ Gemini AI 제조공정 분석</div>
  <p class="hint">공정표·실습 지시서 사진에서 공정명, 작업 내용, 온도, 시간, 주의사항을 구분합니다. 결과는 수정·검토 후에만 공정 기록에 추가됩니다.</p>
@@ -631,7 +665,7 @@ for(let i=0;i<imgs.length;i++){if(imgs[i]){s=pptx.addSlide();base(s,'Practice ph
 const extraImageGroups=[['관능평가 참고 이미지',partAttachments.sensory],['고찰 참고 이미지',partAttachments.discussion]];
 for(const [title,items] of extraImageGroups){for(let i=0;i<items.length;i++){const img=items[i];s=pptx.addSlide();base(s,'Assignment reference image',title+' '+(i+1));await addImageFit(s,img.data,1.05,1.85,11.2,4.95);}}
 // v5: group selected photos by the reviewed process category and auto-layout 1–4 photos per slide.
-if(typeof v5Photos!=='undefined'&&v5Photos.length){const groups={};v5Photos.forEach(p=>{if(p.category==='기타 / 미분류')return;(groups[p.category]??=[]).push(p)});for(const [category,items] of Object.entries(groups)){for(let start=0;start<items.length;start+=4){const batch=items.slice(start,start+4);s=pptx.addSlide();base(s,'V5 · Process photo selection',category);const slots=batch.length===1?[[1.0,1.85,11.2,4.95]]:batch.length===2?[[.75,2.0,5.85,4.55],[6.75,2.0,5.85,4.55]]:batch.length===3?[[.65,1.9,3.95,4.6],[4.7,1.9,3.95,4.6],[8.75,1.9,3.95,4.6]]:[[.7,1.85,5.8,2.45],[6.8,1.85,5.8,2.45],[.7,4.55,5.8,2.45],[6.8,4.55,5.8,2.45]];for(let j=0;j<batch.length;j++){const p=batch[j],q=slots[j];await addImageFit(s,p.data,q[0],q[1],q[2],q[3]);addText(s,p.name,q[0],q[1]+q[3]+.05,q[2],.22,{size:8,color:muted});}}}}
+if(typeof v5Photos!=='undefined'&&v5Photos.length){const groups={};v5Photos.forEach(p=>{if(p.embeddedInStage||p.category==='기타 / 미분류')return;(groups[p.category]??=[]).push(p)});for(const [category,items] of Object.entries(groups)){for(let start=0;start<items.length;start+=4){const batch=items.slice(start,start+4);s=pptx.addSlide();base(s,'V5 · Process photo selection',category);const slots=batch.length===1?[[1.0,1.85,11.2,4.95]]:batch.length===2?[[.75,2.0,5.85,4.55],[6.75,2.0,5.85,4.55]]:batch.length===3?[[.65,1.9,3.95,4.6],[4.7,1.9,3.95,4.6],[8.75,1.9,3.95,4.6]]:[[.7,1.85,5.8,2.45],[6.8,1.85,5.8,2.45],[.7,4.55,5.8,2.45],[6.8,4.55,5.8,2.45]];for(let j=0;j<batch.length;j++){const p=batch[j],q=slots[j];await addImageFit(s,p.data,q[0],q[1],q[2],q[3]);addText(s,p.name,q[0],q[1]+q[3]+.05,q[2],.22,{size:8,color:muted});}}}}
 try{await pptx.writeFile({fileName:(d.product.replace(/[\\/:*?"<>|]/g,'_')||'베이커리')+'_실습과제'+(d.studentName?'_'+d.studentName.replace(/[\\/:*?"<>|]/g,'_'):'')+'.pptx'});}catch(e){alert('PPT 파일 생성 중 오류가 발생했습니다: '+e.message)}
 };
 
@@ -846,4 +880,97 @@ $('runIngredientAi').addEventListener('click',()=>runGeminiAnalysis('ingredients
 $('runProcessAi').addEventListener('click',()=>runGeminiAnalysis('process'));
 $('applyIngredientAi').addEventListener('click',()=>{try{const data=parseAiJson('ingredientAiResult');if(!Array.isArray(data.ingredients)||!data.ingredients.length)throw new Error('반영할 재료가 없습니다.');const items=data.ingredients.filter(x=>x.usage==='dough'&&x.name&&x.grams!==null&&x.grams!==undefined&&Number.isFinite(Number(x.grams))).map(x=>({name:String(x.name),grams:Number(x.grams),kind:x.kind==='flour'?'flour':'other'}));const toppings=(data.ingredients||[]).filter(x=>x.usage==='topping'&&x.name&&x.grams!==null&&Number.isFinite(Number(x.grams))).map(x=>({name:String(x.name),grams:Number(x.grams)}));if(!items.length&&!toppings.length)throw new Error('중량과 사용 구분이 확인된 재료가 없습니다. usage가 unknown인 항목은 직접 확인한 뒤 사용 구분을 dough 또는 topping으로 수정해 주세요.');if(items.length)setIngredientItems(getIngredientItems().filter(x=>x.name||x.grams).concat(items));if(toppings.length)setToppingItems(getToppingItems().filter(x=>x.name||x.grams).concat(toppings));alert('재료 '+items.length+'개, 토핑 '+toppings.length+'개를 추가했습니다. 밀가루 구분과 중량을 다시 확인해 주세요.');}catch(e){alert(e.message)}});
 $('applyProcessAi').addEventListener('click',()=>{try{const data=parseAiJson('processAiResult');if(!Array.isArray(data.stages)||!data.stages.length)throw new Error('반영할 공정이 없습니다.');const stages=data.stages.map(x=>({title:String(x.title||''),detail:String(x.detail||''),temperature:String(x.temperature||''),time:String(x.time||''),point:String(x.point||'')})).filter(x=>x.title||x.detail||x.temperature||x.time||x.point);if(!stages.length)throw new Error('공정 내용이 비어 있습니다.');stages.forEach(x=>addProcessStage(x));alert(stages.length+'개 공정을 추가했습니다. 공정 순서와 조건을 확인해 주세요.');}catch(e){alert(e.message)}});
+
+// ===== O.BAKERY PROJECT 6.1 · Multi-photo classification + process photo records =====
+const PHOTO_CATEGORIES=['재료 준비 및 계량','반죽 및 믹싱','반죽 상태 확인','1차 발효 및 접기','분할 및 둥글리기','벤치타임','충전','성형','2차 발효','굽기 전 마무리','굽기','냉각 및 마무리','완성품','관능평가','기타 / 미분류'];
+let photoClassifyDrafts=[];
+let processPhotoDrafts=[];
+function photoEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function renderPhotoDrafts(items,containerId,kind){
+ const root=$(containerId);root.innerHTML='';
+ items.forEach((item,index)=>{
+  const card=document.createElement('div');card.className='photo-ai-item';
+  const im=document.createElement('img');im.src=item.data;im.alt=item.name||'실습 사진';
+  const body=document.createElement('div');
+  const name=document.createElement('div');name.style.cssText='font-size:12px;font-weight:800;overflow-wrap:anywhere';name.textContent=item.name||('사진 '+(index+1));
+  body.appendChild(name);
+  if(kind==='classify'){
+   const lab=document.createElement('label');lab.textContent='AI 추천 공정';
+   const sel=document.createElement('select');PHOTO_CATEGORIES.forEach(cat=>{const op=document.createElement('option');op.value=cat;op.textContent=cat;sel.appendChild(op)});sel.value=PHOTO_CATEGORIES.includes(item.category)?item.category:'기타 / 미분류';
+   sel.addEventListener('change',()=>{item.category=sel.value;item.userChanged=true;});
+   const desc=document.createElement('div');desc.className='hint';desc.textContent=(item.description||'사진 설명 없음')+' · 신뢰도 '+Math.round((item.confidence||0)*100)+'%';
+   const why=document.createElement('div');why.className='hint';why.textContent=item.reason||'';
+   body.append(lab,sel,desc,why);
+  }else{
+   const fields=[['공정명','title'],['작업 내용 및 관찰','detail'],['온도 및 조건','temperature'],['소요 시간','time'],['주의사항','point']];
+   fields.forEach(([label,key])=>{const l=document.createElement('label');l.textContent=label;const inp=(key==='detail'||key==='point')?document.createElement('textarea'):document.createElement('input');inp.value=item[key]||'';inp.addEventListener('input',()=>item[key]=inp.value);body.append(l,inp)});
+   const hint=document.createElement('div');hint.className='hint';hint.textContent=item.reason||'사진에서 확인할 수 없는 정보는 비워 둡니다.';body.appendChild(hint);
+  }
+  const del=document.createElement('button');del.type='button';del.className='remove-photo';del.textContent='사진 제외';del.style.cssText='margin-top:7px;padding:6px 9px;font-size:11px;background:#f4eeee;color:#875d5d';del.addEventListener('click',()=>{items.splice(index,1);renderPhotoDrafts(items,containerId,kind);if(kind==='classify')$('applyPhotoClassification').disabled=!items.length;else $('applyProcessRecordPhotos').disabled=!items.length;});
+  body.appendChild(del);card.append(im,body);root.appendChild(card);
+ });
+}
+async function sendPhotoBatch(type,files){
+ const images=await Promise.all(files.map(aiReadFile));
+ const response=await fetch(getAiApiUrl(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type,images,consent:true})});
+ const payload=await response.json().catch(()=>({error:'서버 응답을 해석하지 못했습니다.'}));
+ if(!response.ok)throw new Error(payload.error||('요청 실패 (HTTP '+response.status+')'));
+ return {images,result:payload.result||{}};
+}
+$('runPhotoClassification').addEventListener('click',async()=>{
+ const files=Array.from($('classifyPhotoFiles').files||[]);$('applyPhotoClassification').disabled=true;photoClassifyDrafts=[];
+ if(!$('classifyPhotoConsent').checked){alert('사진을 Gemini로 전송하려면 전송 동의에 체크해야 합니다.');return;}
+ if(!files.length){alert('분류할 실습 사진을 선택해 주세요.');return;}
+ if(files.length>20){alert('한 번에 최대 20장까지 선택할 수 있습니다. 4장씩 나누어 자동 분석합니다.');return;}
+ if(files.some(f=>!/^image\/(jpeg|png|webp)$/.test(f.type))){alert('JPG, PNG, WEBP 사진만 사용할 수 있습니다.');return;}
+ if(files.some(f=>f.size>AI_MAX_BYTES)){alert('원본 사진 한 장당 최대 25MB까지 지원합니다.');return;}
+ const btn=$('runPhotoClassification');btn.disabled=true;
+ try{
+  for(let start=0;start<files.length;start+=4){const batch=files.slice(start,start+4);$('classifyPhotoStatus').textContent=`사진 분석 중… ${Math.min(start+batch.length,files.length)} / ${files.length}장`;
+   const {images,result}=await sendPhotoBatch('photo-classify',batch);const rows=Array.isArray(result.photos)?result.photos:[];
+   batch.forEach((file,i)=>{const r=rows.find(x=>Number(x.photoIndex)===i)||rows[i]||{};photoClassifyDrafts.push({name:file.name,data:'data:image/jpeg;base64,'+images[i].data,category:PHOTO_CATEGORIES.includes(r.category)?r.category:'기타 / 미분류',description:String(r.description||''),reason:String(r.reason||''),confidence:Number(r.confidence)||0,confirmed:false});});
+  }
+  renderPhotoDrafts(photoClassifyDrafts,'photoClassificationResults','classify');$('applyPhotoClassification').disabled=!photoClassifyDrafts.length;$('classifyPhotoStatus').textContent=`분석 완료: ${photoClassifyDrafts.length}장 분류 초안 생성. 공정 분류를 확인한 뒤 배치하세요.`;
+ }catch(e){$('classifyPhotoStatus').textContent='분석 실패: '+e.message;alert('사진 분류에 실패했습니다.\n'+e.message)}finally{btn.disabled=false;}
+});
+$('applyPhotoClassification').addEventListener('click',()=>{
+ if(!photoClassifyDrafts.length){alert('반영할 사진이 없습니다.');return;}
+ const added=photoClassifyDrafts.map(p=>({...p,confirmed:true,embeddedInStage:true}));
+ // Attach each approved photo to the matching manufacturing stage so it appears on that stage's PPT slide.
+ added.forEach(photo=>{
+  let card=Array.from(document.querySelectorAll('.process-stage')).find(c=>{
+   const title=(c.querySelector('.stage-title')?.value||'').trim();
+   return title && (title===photo.category || title.includes(photo.category) || photo.category.includes(title));
+  });
+  const image={name:photo.name,data:photo.data};
+  if(card){const current=JSON.parse(card.dataset.images||'[]');current.push(image);card.dataset.images=JSON.stringify(current);const preview=card.querySelector('.stage-image-preview');if(preview){renderAttachmentPreview(preview,current,idx=>{current.splice(idx,1);card.dataset.images=JSON.stringify(current);renderAttachmentPreview(preview,current,()=>{});});}}
+  else addProcessStage({title:photo.category,detail:'AI 사진 분류를 통해 연결한 실습 사진입니다. 작업 내용은 직접 확인하여 작성하세요.',images:[image]});
+ });
+ v5Photos=(Array.isArray(v5Photos)?v5Photos:[]).concat(added);v5Approved=true;
+ v5Render();$('classifyPhotoStatus').textContent=added.length+'장의 사진을 해당 제조공정 기록에 연결했습니다. PPT의 해당 공정 슬라이드에 함께 배치됩니다.';
+ $('applyPhotoClassification').disabled=true;
+});
+$('runProcessRecordPhotos').addEventListener('click',async()=>{
+ const files=Array.from($('processRecordPhotoFiles').files||[]);$('applyProcessRecordPhotos').disabled=true;processPhotoDrafts=[];
+ if(!$('processRecordPhotoConsent').checked){alert('사진을 Gemini로 전송하려면 전송 동의에 체크해야 합니다.');return;}
+ if(!files.length){alert('제조과정 사진을 선택해 주세요.');return;}
+ if(files.length>20){alert('한 번에 최대 20장까지 선택할 수 있습니다. 4장씩 나누어 분석합니다.');return;}
+ if(files.some(f=>!/^image\/(jpeg|png|webp)$/.test(f.type))){alert('JPG, PNG, WEBP 사진만 사용할 수 있습니다.');return;}
+ if(files.some(f=>f.size>AI_MAX_BYTES)){alert('원본 사진 한 장당 최대 25MB까지 지원합니다.');return;}
+ const btn=$('runProcessRecordPhotos');btn.disabled=true;
+ try{
+  for(let start=0;start<files.length;start+=4){const batch=files.slice(start,start+4);$('processRecordPhotoStatus').textContent=`공정 기록 분석 중… ${Math.min(start+batch.length,files.length)} / ${files.length}장`;
+   const {images,result}=await sendPhotoBatch('process-record',batch);const rows=Array.isArray(result.records)?result.records:[];
+   batch.forEach((file,i)=>{const r=rows.find(x=>Number(x.photoIndex)===i)||rows[i]||{};processPhotoDrafts.push({name:file.name,data:images[i].data,title:String(r.title||''),detail:String(r.detail||''),temperature:String(r.temperature||''),time:String(r.time||''),point:String(r.point||''),reason:String(r.reason||''),confidence:Number(r.confidence)||0});});
+  }
+  renderPhotoDrafts(processPhotoDrafts,'processRecordPhotoResults','record');$('applyProcessRecordPhotos').disabled=!processPhotoDrafts.length;$('processRecordPhotoStatus').textContent=`분석 완료: ${processPhotoDrafts.length}장의 공정 기록 초안입니다. 내용을 확인하고 추가하세요.`;
+ }catch(e){$('processRecordPhotoStatus').textContent='분석 실패: '+e.message;alert('제조과정 사진 분석에 실패했습니다.\n'+e.message)}finally{btn.disabled=false;}
+});
+$('applyProcessRecordPhotos').addEventListener('click',()=>{
+ if(!processPhotoDrafts.length){alert('반영할 제조과정 기록이 없습니다.');return;}
+ let count=0;
+ processPhotoDrafts.forEach(p=>{const stage={title:p.title,detail:p.detail,temperature:p.temperature,time:p.time,point:p.point,images:[{name:p.name,data:'data:image/jpeg;base64,'+p.data}]};addProcessStage(stage);count++;});
+ $('processRecordPhotoStatus').textContent=count+'개의 제조과정 기록과 사진을 추가했습니다. 기존 기록은 유지했습니다.';$('applyProcessRecordPhotos').disabled=true;
+});
+
 </script></body></html>

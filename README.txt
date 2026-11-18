@@ -1,4 +1,4 @@
-O.BAKERY PROJECT 6.0 — Gemini AI 사진 분석 버전
+O.BAKERY PROJECT 6.1 — Gemini AI 사진 분류 및 제조과정기록 버전
 기반: O.BAKERY PROJECT 5.22 무료 OCR 개선 버전
 
 추가된 기능
@@ -50,3 +50,30 @@ API 주소 관련 주의
 - 이 패키지는 소스/구조 및 JavaScript 문법 확인 단계입니다.
 - 실제 Gemini 분석은 사용자의 API Key와 Vercel 배포가 완료되어야 테스트할 수 있습니다.
 - iPad Safari 실기기 테스트, PPTX/PDF 회귀 테스트는 아직 완료되지 않았습니다.
+
+
+6.1 추가 기능
+- 실습 사진 여러 장(최대 20장 선택)을 4장씩 나누어 Gemini에 보내 공정별 자동 분류
+- 사진별 공정 카테고리, 설명, 분류 근거, 신뢰도 검토 및 수정
+- 승인한 사진을 기존 PPT 공정별 사진 배치 시스템(v5Photos)에 연결
+- 제조과정기록 전용 사진 업로드 및 사진별 공정 기록 초안 생성
+- 공정명, 관찰 가능한 작업 내용, 온도, 시간, 주의사항을 편집 후 기존 제조공정에 추가
+- 사진에서 확인할 수 없는 온도/시간은 빈칸 유지, 기존 기록 덮어쓰기 금지
+
+API 추가 분석 유형
+- photo-classify: 사진별 공정 카테고리 분류
+- process-record: 실습 사진 기반 제조과정기록 초안 생성
+- 기존 ingredients / process 분석 기능 유지
+
+사용 방법
+1. GitHub 저장소의 index.html, api/analyze.js, package.json을 6.1 파일로 교체합니다.
+2. Vercel이 GitHub 커밋을 자동 배포하도록 기다립니다.
+3. Vercel 환경 변수 GEMINI_API_KEY와 GEMINI_MODEL은 기존 값을 유지합니다. ALLOWED_ORIGIN도 기존 설정을 유지합니다.
+4. 사이트에서 03 실습 사진의 AI 자동 분류 또는 04 제조과정기록 사진 정리를 사용합니다.
+5. 사진은 한 번에 최대 20장 선택할 수 있고 서버로 4장씩 나누어 전송됩니다.
+6. 결과를 검토/수정한 후 반영 버튼을 눌러야 프로젝트/PPT에 반영됩니다.
+
+주의
+- 기존 API Key를 새 파일에 입력하지 않습니다.
+- Vercel 환경 변수는 새로 만들거나 교체하지 않아도 됩니다.
+- 실제 Gemini 호출과 iPad Safari, PPTX/PDF 출력은 배포 후 사용자 테스트가 필요합니다.
