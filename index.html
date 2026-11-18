@@ -350,7 +350,7 @@ function makePdfHtml(d){
  const ingredientRows=(d.ingredients||[]).map(it=>`<tr><td>${esc(it.name||'')}</td><td>${esc(it.grams||0)} g</td><td>${it.kind==='flour'?'밀가루':'일반 재료'}</td></tr>`).join('');
  const stages=(d.processStages||[]).filter(x=>x.title||x.detail||x.temperature||x.time||x.point).map((x,i)=>`<section class="stage"><h3>${i+1}. ${esc(x.title||'공정 단계')}</h3>${x.detail?`<p>${esc(x.detail).replace(/\n/g,'<br>')}</p>`:''}${x.temperature?`<p><b>온도 및 조건:</b> ${esc(x.temperature)}</p>`:''}${x.time?`<p><b>소요 시간:</b> ${esc(x.time)}</p>`:''}${x.point?`<p><b>주의사항:</b> ${esc(x.point).replace(/\n/g,'<br>')}</p>`:''}${(x.images||[]).map(im=>`<img class="photo" src="${im.data}" alt="${esc(im.name||'공정 사진')}">`).join('')}</section>`).join('');
  const attach=(d.attachments||{});
- const ingredientImageBlock=(attach.ingredients||[]).length?`<h3 class="subhead">재료표 · 배합표 원본 이미지</h3><div class="photos ingredient-photos">${(attach.ingredients||[]).map(im=>`<figure><img class="photo ingredient-photo" src="${im.data}" alt="${esc(im.name||'재료표 이미지')}"><figcaption>${esc(im.name||'재료표 이미지')}</figcaption></figure>`).join('')}</div>`:'';
+ const ingredientImageBlock=(attach.ingredients||[]).length?`<div class="photos ingredient-photos">${(attach.ingredients||[]).map(im=>`<figure><img class="photo ingredient-photo" src="${im.data}" alt=""></figure>`).join('')}</div>`:'';
  const attachmentHtml=[...(attach.sensory||[]).map(x=>({...x,group:'관능평가 참고'})),...(attach.discussion||[]).map(x=>({...x,group:'고찰 참고'}))];
  const attachmentBlock=attachmentHtml.length?`<h2>첨부 이미지</h2><div class="photos">${attachmentHtml.map(im=>`<figure><img class="photo" src="${im.data}" alt="${esc(im.name||'첨부 이미지')}"><figcaption>${esc(im.group)} · ${esc(im.name||'이미지')}</figcaption></figure>`).join('')}</div>`:'';
  const senses=[['내부 조직',d.senseOrganization],['기공',d.senseCrumb],['속색',d.senseInnerColor],['향',d.senseAroma],['맛',d.senseTaste],['부피',d.senseVolume],['껍질색',d.senseCrustColor],['외형 균형',d.senseBalance],['굽기의 균일함',d.senseBaking],['파쇄성',d.senseFracturability]].filter(x=>x[1]);
@@ -420,14 +420,14 @@ for(let i=0;i<completedStages.length;i++){
   const caption=String(stageImages[0].description||stageImages[0].caption||'').trim();
   if(caption)addText(s,caption,.85,6.78,5.75,.22,{size:9,color:muted});
  }else if(stageImages.length>1){
-  const cols=2,rows=Math.ceil(stageImages.length/cols),gap=.16,top=1.95,availableH=4.85;
-  const cellW=(5.95-gap)/2,cellH=(availableH-gap*(rows-1))/rows;
-  for(let j=0;j<stageImages.length;j++){
-   const im=stageImages[j],col=j%2,row=Math.floor(j/2),x=.75+col*(cellW+gap),y=top+row*(cellH+gap);
-   await addImageFit(s,im.data,x,y,cellW,cellH);
+  const slots=stageImages.length===2?[[.75,2.05,2.9,4.25],[3.8,2.05,2.9,4.25]]:
+   [[.75,1.95,2.9,2.25],[3.8,1.95,2.9,2.25],[.75,4.45,2.9,2.25],[3.8,4.45,2.9,2.25]];
+  for(let j=0;j<Math.min(stageImages.length,4);j++){
+   const im=stageImages[j],q=slots[j];await addImageFit(s,im.data,q[0],q[1],q[2],q[3]);
    const caption=String(im.description||im.caption||'').trim();
-   if(caption&&cellH>.65)addText(s,caption,x,y+cellH-.22,cellW,.2,{size:7,color:muted});
+   if(caption)addText(s,caption,q[0],q[1]+q[3]+.03,q[2],.28,{size:8,color:muted});
   }
+  if(stageImages.length>4)addText(s,'외 '+(stageImages.length-4)+'장의 사진은 이번 페이지에 포함되지 않았습니다.',.8,6.85,5.9,.2,{size:8,color:muted});
  }
 }
 const sensoryGroups=[{kicker:'03 · Internal evaluation',title:'관능평가 · 내부 평가',items:[['조직',d.senseOrganization],['기공',d.senseCrumb],['속색',d.senseInnerColor],['향',d.senseAroma],['맛',d.senseTaste]]},{kicker:'04 · External evaluation',title:'관능평가 · 외부 평가',items:[['부피',d.senseVolume],['껍질색',d.senseCrustColor],['외형의 균형',d.senseBalance],['굽기의 균일함',d.senseBaking],['파쇄성',d.senseFracturability]]}];
