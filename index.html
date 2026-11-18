@@ -99,6 +99,9 @@ body[data-theme="dark"] footer{color:var(--muted)}
 
 .ocr-panel{background:var(--paper);border-style:solid}.ocr-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.ocr-actions button{width:auto;margin:0;padding:10px 13px;font-size:12px}.ocr-apply{background:#e7eee7;color:#34463b}.ocr-result{min-height:150px;font-size:13px;white-space:pre-wrap}.ocr-status{margin-top:9px}
 body[data-theme="dark"] .ocr-panel{background:#1b231f;border-color:var(--line)}body[data-theme="dark"] .ocr-apply{background:#39463e;color:#e8ece8}
+
+.ocr-check{display:flex;align-items:center;gap:8px;margin:10px 0;color:var(--muted);font-size:12px}
+.ocr-check input{width:auto;margin:0}
 </style>
 </head>
 <body>
@@ -127,7 +130,7 @@ body[data-theme="dark"] .ocr-panel{background:#1b231f;border-color:var(--line)}b
 <div class="part-upload"><strong>재료표 · 배합표 이미지 첨부</strong><span class="hint">직접 제작한 재료표, 배합표, 베이커스 퍼센트 정리 이미지를 등록하세요.</span><input id="ingredientImages" type="file" accept="image/*" multiple><div class="attachment-preview" id="ingredientPreview"></div></div>
 <div class="part-upload ocr-panel" id="ingredientOcrPanel">
  <strong>재료표 사진 글자 인식 (OCR)</strong>
- <span class="hint">재료표 사진의 한국어·영어 글자를 인식합니다. 결과를 확인하고 수정한 뒤 배합표에 반영하세요.</span>
+ <span class="hint">사진을 확대·보정한 뒤 여러 방식으로 인식하고, 결과 중 신뢰도가 높은 내용을 선택합니다. 결과를 확인하고 수정한 뒤 배합표에 반영하세요.</span><label class="ocr-check"><input type="checkbox" id="ingredientOcrMulti" checked> 사진 보정 및 다중 인식 사용</label>
  <input id="ingredientOcrFile" type="file" accept="image/*" multiple>
  <div class="ocr-actions"><button type="button" class="ghost" id="runIngredientOcr">재료표 글자 인식</button><button type="button" class="secondary ocr-apply" id="applyIngredientOcr" disabled>인식한 재료를 배합표에 추가</button></div>
  <div class="hint ocr-status" id="ingredientOcrStatus">아직 인식한 사진이 없습니다.</div>
@@ -172,7 +175,7 @@ body[data-theme="dark"] .ocr-panel{background:#1b231f;border-color:var(--line)}b
 <button type="button" class="secondary" id="addProcessStage">+ 제조 공정 추가</button>
 <div class="part-upload ocr-panel" id="processOcrPanel">
  <strong>제조공정 사진 글자 인식 (OCR)</strong>
- <span class="hint">공정표·실습 지시서 사진의 글자를 인식해 공정 기록 초안으로 정리합니다.</span>
+ <span class="hint">공정표·실습 지시서 사진을 확대·보정하고 여러 방식으로 인식해 공정 기록 초안으로 정리합니다.</span><label class="ocr-check"><input type="checkbox" id="processOcrMulti" checked> 사진 보정 및 다중 인식 사용</label>
  <input id="processOcrFile" type="file" accept="image/*" multiple>
  <div class="ocr-actions"><button type="button" class="ghost" id="runProcessOcr">제조공정 글자 인식</button><button type="button" class="secondary ocr-apply" id="applyProcessOcr" disabled>인식한 내용을 공정 기록에 추가</button></div>
  <div class="hint ocr-status" id="processOcrStatus">아직 인식한 사진이 없습니다.</div>
@@ -663,7 +666,7 @@ const oldExportHandler=$('export').onclick;$('export').onclick=async()=>{if(v5Ph
 })();
 
 
-// OCR module: Tesseract.js 5, Korean + English
+// OCR 개선 엔진: Tesseract.js 5 + 브라우저 Canvas 전처리 + 다중 패스
 let tesseractLoaderPromise=null;
 async function ensureTesseract(){
  if(window.Tesseract)return window.Tesseract;
@@ -675,41 +678,97 @@ async function ensureTesseract(){
  }).catch(e=>{tesseractLoaderPromise=null;throw e});
  return tesseractLoaderPromise;
 }
-async function runOcrForFiles(inputId,textId,statusId,buttonId){
+function loadImageForOcr(file){
+ return new Promise((resolve,reject)=>{const url=URL.createObjectURL(file),img=new Image();img.onload=()=>{URL.revokeObjectURL(url);resolve(img)};img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('사진을 열 수 없습니다: '+file.name))};img.src=url});
+}
+async function makeOcrVariants(file){
+ const img=await loadImageForOcr(file);
+ const maxWidth=2600,scale=Math.min(2.5,Math.max(1.5,maxWidth/img.naturalWidth));
+ const w=Math.round(img.naturalWidth*scale),h=Math.round(img.naturalHeight*scale);
+ const base=document.createElement('canvas');base.width=w;base.height=h;
+ const bctx=base.getContext('2d',{willReadFrequently:true});bctx.fillStyle='#fff';bctx.fillRect(0,0,w,h);bctx.drawImage(img,0,0,w,h);
+ const source=bctx.getImageData(0,0,w,h),gray=new Uint8ClampedArray(source.data.length);
+ let sum=0,count=0;
+ for(let i=0;i<source.data.length;i+=4){const v=.299*source.data[i]+.587*source.data[i+1]+.114*source.data[i+2];gray[i]=gray[i+1]=gray[i+2]=v;gray[i+3]=255;if(v<245){sum+=v;count++}}
+ const mean=count?sum/count:180,threshold=Math.max(105,Math.min(205,mean*.78));
+ const enhanced=document.createElement('canvas');enhanced.width=w;enhanced.height=h;
+ const ectx=enhanced.getContext('2d');const ed=ectx.createImageData(w,h);
+ const binary=document.createElement('canvas');binary.width=w;binary.height=h;
+ const tctx=binary.getContext('2d');const td=tctx.createImageData(w,h);
+ for(let i=0;i<gray.length;i+=4){
+  const v=gray[i],contrast=Math.max(0,Math.min(255,(v-128)*1.35+128));
+  ed.data[i]=ed.data[i+1]=ed.data[i+2]=contrast;ed.data[i+3]=255;
+  const bw=v<threshold?0:255;td.data[i]=td.data[i+1]=td.data[i+2]=bw;td.data[i+3]=255;
+ }
+ ectx.putImageData(ed,0,0);tctx.putImageData(td,0,0);
+ return [{label:'확대 원본',canvas:base},{label:'명암 보정',canvas:enhanced},{label:'흑백 보정',canvas:binary}];
+}
+async function runOcrForFiles(inputId,textId,statusId,buttonId,multiId){
  const files=Array.from($(inputId).files||[]).filter(f=>f.type.startsWith('image/'));if(!files.length){alert('먼저 인식할 사진을 선택해 주세요.');return false}
  const button=$(buttonId),status=$(statusId);button.disabled=true;status.textContent='OCR 엔진 준비 중...';
  try{
-  const T=await ensureTesseract();const worker=await T.createWorker('kor+eng',1,{logger:m=>{if(m.status==='recognizing text')status.textContent='글자 인식 중... '+Math.round((m.progress||0)*100)+'%'}});
-  try{const results=[];for(let i=0;i<files.length;i++){status.textContent=`사진 ${i+1}/${files.length} 인식 중...`;const r=await worker.recognize(files[i]);results.push(`【${files[i].name}】\n${r.data.text||''}`)}
-   $(textId).value=results.join('\n\n');status.textContent=`인식 완료: ${files.length}장. 결과를 검토하고 수정한 뒤 반영하세요.`;return true;
+  const T=await ensureTesseract();
+  const worker=await T.createWorker('kor+eng',1,{logger:m=>{if(m.status==='recognizing text')status.textContent='글자 인식 중... '+Math.round((m.progress||0)*100)+'%'}});
+  try{
+   const outputs=[],useMulti=$(multiId)?.checked!==false;
+   for(let fi=0;fi<files.length;fi++){
+    status.textContent=`사진 ${fi+1}/${files.length}: 이미지 보정 중...`;
+    const variants=useMulti?await makeOcrVariants(files[fi]):[{label:'원본',canvas:files[fi]}];
+    const candidates=[];
+    for(let vi=0;vi<variants.length;vi++){
+     status.textContent=`사진 ${fi+1}/${files.length}: ${variants[vi].label} 인식 (${vi+1}/${variants.length})`;
+     const psm=(inputId==='ingredientOcrFile'?'6':'11');
+     if(worker.setParameters)await worker.setParameters({tessedit_pageseg_mode:psm,preserve_interword_spaces:'1'});
+     const r=await worker.recognize(variants[vi].canvas);
+     candidates.push({text:(r.data&&r.data.text)||'',confidence:Number(r.data&&r.data.confidence)||0,label:variants[vi].label});
+    }
+    candidates.sort((a,b)=>b.confidence-a.confidence);
+    const best=candidates[0]||{text:'',confidence:0,label:'인식 결과 없음'};
+    const header=`【${files[fi].name} · 선택 결과: ${best.label} · 신뢰도 ${best.confidence.toFixed(0)}】`;
+    outputs.push(header+'\n'+best.text);
+    if(useMulti&&candidates.length>1){
+     outputs.push('【다른 인식 결과 참고】\n'+candidates.slice(1).map(c=>`[${c.label} / ${c.confidence.toFixed(0)}점]\n${c.text}`).join('\n\n'));
+    }
+   }
+   $(textId).value=outputs.join('\n\n');
+   status.textContent=`인식 완료: ${files.length}장. 보정·다중 인식 결과를 검토하고 수정한 뒤 반영하세요.`;
+   return true;
   }finally{await worker.terminate()}
  }catch(e){status.textContent='인식 실패: '+(e.message||e);alert('글자 인식 실패: '+(e.message||e));return false}
  finally{button.disabled=false}
 }
 function parseIngredientOcr(text){
- const result=[],seen=new Set(),skip=/^(재료|원료|사용량|중량|배합표|재료명|구분|합계|총량|비고|수량|단위)/i;
+ const result=[],seen=new Set(),skip=/^(재료|원료|사용량|중량|배합표|재료명|구분|합계|총량|비고|수량|단위|선택 결과|다른 인식 결과)/i;
  for(const raw of String(text||'').split(/\r?\n/)){
-  let line=raw.replace(/[|｜]/g,' ').replace(/\s+/g,' ').trim();if(!line||skip.test(line)||/^【/.test(line))continue;
-  let name='',amount=NaN,unit='g',m=line.match(/^(.+?)\s*[:：=]?\s*(\d+(?:[.,]\d+)?)\s*(kg|g|그램)\b/i);
-  if(m){name=m[1];amount=parseFloat(m[2].replace(',','.'));unit=m[3]}
+  let line=raw.replace(/[|｜]/g,' ').replace(/\s+/g,' ').trim();
+  if(!line||skip.test(line)||/^【/.test(line)||/^\[.*점\]$/.test(line))continue;
+  let name='',amount=NaN,unit='g',m=line.match(/^(.+?)\s*[:：=]?\s*(\d+(?:[.,]\d+)?)\s*(kg|g|그램)?$/i);
+  if(m){name=m[1];amount=parseFloat(m[2].replace(',','.'));unit=m[3]||'g'}
   else if((m=line.match(/^(\d+(?:[.,]\d+)?)\s*(kg|g|그램)\s+(.+)$/i))){amount=parseFloat(m[1].replace(',','.'));unit=m[2];name=m[3]}
-  else {const parts=line.split(/\s{2,}|\t/).filter(Boolean);if(parts.length>1){const q=parts.find(x=>/^\d+(?:[.,]\d+)?\s*(kg|g)?$/i.test(x));if(q){name=parts.filter(x=>x!==q).join(' ');amount=parseFloat(q.replace(/[^\d.,]/g,'').replace(',','.'));unit=/kg/i.test(q)?'kg':'g'}}}
-  name=name.replace(/^[\d.)、]+\s*/,'').trim();if(!name||!Number.isFinite(amount)||amount<0)continue;if(/^kg$/i.test(unit))amount*=1000;
-  const kind=/밀가루|강력분|중력분|박력분|소프트\s*t|flour/i.test(name)?'flour':'other';const key=name.toLowerCase()+'|'+amount;if(!seen.has(key)){seen.add(key);result.push({kind,name,grams:amount})}
+  else{
+   const parts=line.split(/\s{2,}|\t/).map(x=>x.trim()).filter(Boolean);
+   if(parts.length>1){const q=parts.find(x=>/^\d+(?:[.,]\d+)?\s*(kg|g)?$/i.test(x));if(q){name=parts.filter(x=>x!==q).join(' ');amount=parseFloat(q.replace(/[^\d.,]/g,'').replace(',','.'));unit=/kg/i.test(q)?'kg':'g'}}
+  }
+  name=name.replace(/^[\d.)、]+\s*/,'').replace(/[•·:：]+$/,'').trim();
+  if(!name||!Number.isFinite(amount)||amount<0||name.length>50)continue;
+  if(/^kg$/i.test(unit))amount*=1000;
+  const kind=/밀가루|강력분|중력분|박력분|소프트\s*t|강력|중력|박력|flour/i.test(name)?'flour':'other';
+  const key=name.toLowerCase()+'|'+amount;if(!seen.has(key)){seen.add(key);result.push({kind,name,grams:amount})}
  }
  return result;
 }
-$('runIngredientOcr').addEventListener('click',async()=>{$('applyIngredientOcr').disabled=!(await runOcrForFiles('ingredientOcrFile','ingredientOcrText','ingredientOcrStatus','runIngredientOcr'))});
+$('runIngredientOcr').addEventListener('click',async()=>{$('applyIngredientOcr').disabled=!(await runOcrForFiles('ingredientOcrFile','ingredientOcrText','ingredientOcrStatus','runIngredientOcr','ingredientOcrMulti'))});
 $('applyIngredientOcr').addEventListener('click',()=>{const items=parseIngredientOcr($('ingredientOcrText').value);if(!items.length){alert('재료명과 중량을 함께 인식한 항목이 없습니다. 인식 결과를 확인해 주세요.');return}setIngredientItems(getIngredientItems().filter(x=>x.name||x.grams).concat(items));alert(items.length+'개 재료 초안을 추가했습니다. 밀가루 구분과 중량을 확인해 주세요.')});
-$('runProcessOcr').addEventListener('click',async()=>{$('applyProcessOcr').disabled=!(await runOcrForFiles('processOcrFile','processOcrText','processOcrStatus','runProcessOcr'))});
+$('runProcessOcr').addEventListener('click',async()=>{$('applyProcessOcr').disabled=!(await runOcrForFiles('processOcrFile','processOcrText','processOcrStatus','runProcessOcr','processOcrMulti'))});
 function parseProcessOcr(text){
  const lines=String(text||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean),out=[];let cur=null;
  const head=/^(?:\d+[\.)、]\s*)?(재료\s*계량|계량|믹싱|반죽|혼합|1차\s*발효|중간\s*발효|발효|분할|둥글리기|벤치\s*타임|휴지|성형|충전|2차\s*발효|굽기|오븐|냉각|마무리|포장|제조\s*공정|공정\s*\d+)/i;
- for(let line of lines){line=line.replace(/^【.*?】/,'').trim();if(!line)continue;
+ for(let line of lines){line=line.replace(/^【.*?】/,'').trim();if(!line||/^\[.*점\]$/.test(line)||/^다른 인식 결과/.test(line))continue;
   if(head.test(line)){if(cur)out.push(cur);cur={title:line.replace(/^[\d.)、]+\s*/,''),detail:[],temperature:'',time:'',point:''}}
   else{if(!cur)cur={title:'인식된 제조공정',detail:[],temperature:'',time:'',point:''};if(/온도|℃|°c|도\b/i.test(line))cur.temperature+=(cur.temperature?' / ':'')+line;else if(/분\b|시간|초\b|hour|min\b/i.test(line))cur.time+=(cur.time?' / ':'')+line;else cur.detail.push(line)}
  }
  if(cur)out.push(cur);return out.map(x=>({...x,detail:x.detail.join('\n')})).filter(x=>x.title||x.detail||x.temperature||x.time)
 }
 $('applyProcessOcr').addEventListener('click',()=>{const stages=parseProcessOcr($('processOcrText').value);if(!stages.length){alert('공정 내용을 찾지 못했습니다. 인식 결과를 확인해 주세요.');return}stages.forEach(x=>addProcessStage(x));alert(stages.length+'개 공정 초안을 추가했습니다. 내용을 확인해 주세요.')});
+
 </script></body></html>
