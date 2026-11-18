@@ -400,14 +400,80 @@ function makePdfHtml(d){
  <p class="muted" style="margin-top:12mm;font-size:8pt">O.BAKERY PROJECT · 본 문서는 입력된 실습 기록을 바탕으로 생성되었습니다.</p>
  <script>window.addEventListener('load',async()=>{const imgs=[...document.images];await Promise.all(imgs.map(im=>im.decode?im.decode().catch(()=>{}):Promise.resolve()));setTimeout(()=>window.print(),250)});<\/script></body></html>`;
 }
-$('exportPdf').onclick=()=>{
- const d=data();if(!d.product){alert('제품 품목명을 입력해 주세요.');$('product').focus();return}
- const w=window.open('','_blank');if(!w){alert('PDF 다운로드 창이 차단되었습니다. 브라우저에서 팝업을 허용한 뒤 다시 시도해 주세요.');return}
- let html=makePdfHtml(d).replace(/<script>[\s\S]*?<\/script>/,'');
- w.document.open();w.document.write(html);w.document.close();
- const script=w.document.createElement('script');script.src='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
- script.onload=async()=>{try{const images=[...w.document.images];await Promise.all(images.map(im=>im.decode?im.decode().catch(()=>{}):Promise.resolve()));await w.html2pdf().set({margin:[12,12,14,12],filename:(d.product||'obakery_assignment').replace(/[\\/:*?"<>|]/g,'_')+'_OBAKERY.pdf',image:{type:'jpeg',quality:.96},html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff',scrollY:0},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},pagebreak:{mode:['css','legacy'],before:['h2'],avoid:['h1','h2','h3','tr','figure','.stage','.ingredient-photos']}}).from(w.document.body).save();}catch(err){alert('PDF 파일 생성에 실패했습니다. 인쇄 기능으로 저장을 시도해 주세요.');w.print();}};
- script.onerror=()=>{alert('PDF 생성 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.');w.print();};w.document.head.appendChild(script);
+async function loadHtml2Pdf(targetWindow){
+ const candidates=[
+  'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js',
+  'https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js',
+  'https://unpkg.com/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js'
+ ];
+ const errors=[];
+ for(const url of candidates){
+  try{
+   await new Promise((resolve,reject)=>{
+    const sc=targetWindow.document.createElement('script');
+    sc.src=url;sc.async=true;
+    sc.onload=()=>resolve();
+    sc.onerror=()=>{sc.remove();reject(new Error('라이브러리 로드 실패: '+url))};
+    targetWindow.document.head.appendChild(sc);
+   });
+   if(typeof targetWindow.html2pdf==='function')return targetWindow.html2pdf;
+   errors.push(url+' (로드됐지만 html2pdf 함수가 없음)');
+  }catch(err){errors.push(err.message||String(err))}
+ }
+ throw new Error('PDF 라이브러리를 준비하지 못했습니다. '+errors.join(' / '));
+}
+$('exportPdf').onclick=async()=>{
+ const d=data();
+ if(!d.product){alert('제품 품목명을 입력해 주세요.');$('product').focus();return}
+ const w=window.open('','_blank');
+ if(!w){alert('PDF 생성 창이 차단되었습니다. 브라우저에서 팝업을 허용한 뒤 다시 시도해 주세요.');return}
+ const btn=$('exportPdf');
+ btn.disabled=true;btn.textContent='PDF 생성 중...';
+ try{
+  const html=makePdfHtml(d).replace(/<script>[\s\S]*?<\/script>/,'');
+  w.document.open();w.document.write(html);w.document.close();
+  await new Promise(resolve=>{
+   if(w.document.readyState==='complete')resolve();
+   else w.addEventListener('load',resolve,{once:true});
+  });
+  const html2pdf=await loadHtml2Pdf(w);
+  if(w.document.fonts&&w.document.fonts.ready)await w.document.fonts.ready;
+  const images=[...w.document.images];
+  await Promise.all(images.map(async im=>{
+   if(!im.complete)await new Promise(resolve=>{
+    im.addEventListener('load',resolve,{once:true});
+    im.addEventListener('error',resolve,{once:true});
+   });
+   if(im.decode)await im.decode().catch(()=>{});
+  }));
+  const filename=(d.product||'obakery_assignment').replace(/[\\/:*?"<>|]/g,'_')+'_OBAKERY.pdf';
+  const worker=html2pdf().set({
+   margin:[12,12,14,12],
+   filename,
+   image:{type:'jpeg',quality:.94},
+   html2canvas:{
+    scale:1.5,
+    useCORS:true,
+    allowTaint:false,
+    backgroundColor:'#ffffff',
+    scrollX:0,
+    scrollY:0,
+    logging:false,
+    windowWidth:Math.max(w.document.body.scrollWidth,w.document.documentElement.scrollWidth,794)
+   },
+   jsPDF:{unit:'mm',format:'a4',orientation:'portrait',compress:true},
+   pagebreak:{mode:['css','legacy'],before:['h2'],avoid:['h1','h2','h3','tr','figure','.stage','.ingredient-photos']}
+  }).from(w.document.body);
+  await worker.save();
+  btn.textContent='PDF 파일 만들기';
+  btn.disabled=false;
+ }catch(err){
+  console.error('O.BAKERY PDF export error:',err);
+  const detail=(err&&err.message)?err.message:String(err);
+  alert('PDF 파일 생성에 실패했습니다.\\n\\n오류 내용: '+detail+'\\n\\n인터넷 연결과 팝업 허용 여부를 확인해 주세요.');
+  btn.textContent='PDF 파일 만들기';btn.disabled=false;
+  if(!w.closed)w.close();
+ }
 };
 
 function updateProfilePreview(){const d=data();$('previewName').textContent=d.studentName||'미입력';$('previewDepartment').textContent=d.studentDepartment||'미입력';$('previewStudentId').textContent=d.studentId||'미입력'}
