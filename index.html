@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>O.BAKERY PROJECT 5.19 | Assignment Studio</title>
+<title>O.BAKERY VERSION 1.0</title>
 <style>
 :root{--ink:#26332f;--muted:#78827d;--cream:#f7f5ef;--paper:#fffefa;--line:#e7e4db;--accent:#9b7652;--sage:#e7eee7}
 *{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,"Noto Sans KR",Arial,sans-serif}
@@ -116,6 +116,24 @@ body[data-theme="dark"] footer{color:var(--muted)}
 .photo-ai-actions button{width:auto;margin-top:0}
 @media(max-width:560px){.photo-ai-item{grid-template-columns:82px 1fr}.photo-ai-item img{width:82px;height:82px}}
 
+
+/* VERSION 1.0 · 가독성 개선 */
+body{font-size:15px;line-height:1.65}
+main{max-width:1240px}
+.panel{padding:26px;box-shadow:0 7px 24px rgba(38,51,47,.08)}
+h2{font-size:20px;line-height:1.4}
+.sub,.note,.hint{font-size:13px;line-height:1.65}
+label{font-size:14px;line-height:1.45}
+input,textarea,select{font-size:15px;min-height:44px}
+textarea{min-height:116px}
+button{min-height:42px;line-height:1.35}
+.process-stage{padding:19px;border-width:1.5px}
+.process-stage-head strong{font-size:15px}
+.process-stage .stage-title{font-weight:700;font-size:16px}
+#ingredientTable th,#ingredientTable td,#toppingTable th,#toppingTable td{font-size:13px}
+@media(max-width:800px){main{padding-left:16px;padding-right:16px}.panel{padding:20px}}
+@media(max-width:480px){header{padding:18px 16px 24px}header .top{align-items:flex-start}.top-actions{gap:6px}.top-actions .pill{font-size:10px;padding:7px 9px}.panel{padding:17px}input,textarea,select{font-size:16px}}
+
 </style>
 
 <style>
@@ -130,11 +148,11 @@ body[data-theme="dark"] footer{color:var(--muted)}
 </style>
 </head>
 <body>
-<header><div class="top"><div class="brand">O.BAKERY PROJECT</div><div class="top-actions"><button type="button" class="theme-toggle" id="themeToggle" aria-pressed="false">🌙 다크모드</button><div class="pill">MY ASSIGNMENT STUDIO · VERSION 6.3</div></div></div>
+<header><div class="top"><div class="brand">O.BAKERY PROJECT</div><div class="top-actions"><button type="button" class="theme-toggle" id="themeToggle" aria-pressed="false">🌙 다크모드</button><div class="pill">O.BAKERY VERSION 1.0</div></div></div>
 <div class="hero"><div><div class="eyebrow">BAKERY · PASTRY · PRACTICE</div><h1>실습 기록을 정리하고<br>과제 PPT 완성하기</h1><p>실습 사진 정리부터 재료 배합표 작성, 프로젝트 파일 저장까지<br>제과·제빵 실습 과제 제작을 한 곳에서 진행하세요.</p></div><button type="button" class="hero-art" id="breadEmoji" aria-label="빵 이모지 바꾸기" title="터치해서 다른 빵으로 바꿔보세요">🥐</button></div></header>
 <main>
 <div class="panel" id="v5Workspace" style="border:1px solid #d8c7b2;background:linear-gradient(135deg,#fffefa,#f4eee5)">
- <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap"><div><div class="eyebrow" style="color:#9b7652">VERSION 6.3 · AI RELIABILITY WORKFLOW</div><h2 style="font-size:22px;margin:7px 0">프로젝트 관리</h2><p class="sub" style="margin:0">공정 순서 정리와 공정별 사진 추천을 하나의 흐름으로 관리합니다.</p></div><span class="pill" style="background:#26332f;color:white;border:0">LOCAL PROJECT</span></div>
+ <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap"><div><div class="eyebrow" style="color:#9b7652">O.BAKERY VERSION 1.0 · AI RELIABILITY WORKFLOW</div><h2 style="font-size:22px;margin:7px 0">프로젝트 관리</h2><p class="sub" style="margin:0">공정 순서 정리와 공정별 사진 추천을 하나의 흐름으로 관리합니다.</p></div><span class="pill" style="background:#26332f;color:white;border:0">LOCAL PROJECT</span></div>
  <div style="margin-top:22px;min-height:150px;display:flex;align-items:center;justify-content:center;border:1px dashed #d8c7b2;border-radius:14px;background:rgba(255,255,255,.55)">
   <div style="font-size:20px;font-weight:800;letter-spacing:.04em;color:#9b7652">🥐 O.BAKERY · PRACTICE WORKSPACE</div>
  </div>
@@ -454,7 +472,7 @@ function setToppingItems(items){$('toppingRows').innerHTML='';(items||[]).forEac
  });
 })();
 function processData(){return Array.from(document.querySelectorAll('.process-stage')).map(card=>({title:card.querySelector('.stage-title').value.trim(),detail:card.querySelector('.stage-detail').value.trim(),temperature:card.querySelector('.stage-temperature').value.trim(),time:card.querySelector('.stage-time').value.trim(),point:card.querySelector('.stage-point').value.trim(),images:JSON.parse(card.dataset.images||'[]')}));}
-function addProcessStage(stage={}){const wrap=document.createElement('div');wrap.className='process-stage';wrap.innerHTML=`<div class="process-stage-head"><strong class="stage-number">공정 단계</strong><button type="button" class="remove-stage">단계 삭제</button></div><div class="stage-fields"><div class="wide"><label>공정명</label><input class="stage-title" placeholder="예: 재료 준비 및 계량 / 반죽 제조 및 상태 확인"></div><div class="wide"><label>작업 내용 및 반죽·제품 상태</label><textarea class="stage-detail" placeholder="예: 각 재료를 정확히 계량한 뒤, 유지와 액체 재료의 상태를 확인했다. 가루 재료는 체에 내려 뭉침을 제거했다."></textarea></div><div><label>온도 및 조건</label><input class="stage-temperature" placeholder="예: 반죽 온도 24℃ / 실온"></div><div><label>소요 시간</label><input class="stage-time" placeholder="예: 믹싱 8~10분"></div><div class="wide"><label>주의사항 및 확인 사항</label><textarea class="stage-point" placeholder="예: 재료가 한쪽에 뭉치지 않도록 하고, 믹싱 종료 시 반죽의 탄력과 글루텐 형성을 확인했다."></textarea></div><div class="wide part-upload"><strong>이 공정의 참고 이미지 첨부</strong><span class="hint">공정 사진, 반죽 상태, 성형 과정, 발효 상태 등을 등록하세요.</span><input class="stage-images" type="file" accept="image/*" multiple><div class="attachment-preview stage-image-preview"></div></div></div>`;
+function addProcessStage(stage={}){const wrap=document.createElement('div');wrap.className='process-stage';wrap.innerHTML=`<div class="process-stage-head"><strong class="stage-number">공정 단계</strong><button type="button" class="remove-stage">단계 삭제</button></div><div class="stage-fields"><div class="wide"><label>공정명</label><input class="stage-title" placeholder="예: 재료계량 / 반죽믹싱 / 1차발효"></div><div class="wide"><label>작업 내용 및 반죽·제품 상태</label><textarea class="stage-detail" placeholder="예: 각 재료를 정확히 계량한 뒤, 유지와 액체 재료의 상태를 확인했다. 가루 재료는 체에 내려 뭉침을 제거했다."></textarea></div><div><label>온도 및 조건</label><input class="stage-temperature" placeholder="예: 반죽 온도 24℃ / 실온"></div><div><label>소요 시간</label><input class="stage-time" placeholder="예: 믹싱 8~10분"></div><div class="wide"><label>주의사항 및 확인 사항</label><textarea class="stage-point" placeholder="예: 재료가 한쪽에 뭉치지 않도록 하고, 믹싱 종료 시 반죽의 탄력과 글루텐 형성을 확인했다."></textarea></div><div class="wide part-upload"><strong>이 공정의 참고 이미지 첨부</strong><span class="hint">공정 사진, 반죽 상태, 성형 과정, 발효 상태 등을 등록하세요.</span><input class="stage-images" type="file" accept="image/*" multiple><div class="attachment-preview stage-image-preview"></div></div></div>`;
 wrap.querySelector('.stage-title').value=stage.title||'';wrap.querySelector('.stage-detail').value=stage.detail||'';wrap.querySelector('.stage-temperature').value=stage.temperature||'';wrap.querySelector('.stage-time').value=stage.time||'';wrap.querySelector('.stage-point').value=stage.point||'';
 wrap.querySelector('.remove-stage').onclick=()=>{wrap.remove();renumberStages()};wrap.dataset.images=JSON.stringify(stage.images||[]);const stagePreview=wrap.querySelector('.stage-image-preview');const renderStageImages=()=>{const current=JSON.parse(wrap.dataset.images||'[]');renderAttachmentPreview(stagePreview,current,index=>{current.splice(index,1);wrap.dataset.images=JSON.stringify(current);renderStageImages();});};wrap.querySelector('.stage-images').addEventListener('change',e=>readImageFiles(e.target.files,items=>{const current=JSON.parse(wrap.dataset.images||'[]');wrap.dataset.images=JSON.stringify(current.concat(items));renderStageImages();}));if(stage.images){renderStageImages();} $('processStages').appendChild(wrap);renumberStages();}
 function renumberStages(){document.querySelectorAll('.process-stage').forEach((card,i)=>card.querySelector('.stage-number').textContent='공정 '+(i+1));}
@@ -766,7 +784,7 @@ function parseAiJson(id){try{return JSON.parse($(id).value)}catch(e){throw new E
 $('runIngredientAi').addEventListener('click',()=>runGeminiAnalysis('ingredients'));
 $('runProcessAi').addEventListener('click',()=>runGeminiAnalysis('process'));
 $('applyIngredientAi').addEventListener('click',()=>{try{const data=parseAiJson('ingredientAiResult');if(!Array.isArray(data.ingredients)||!data.ingredients.length)throw new Error('반영할 재료가 없습니다.');const items=data.ingredients.filter(x=>x.usage==='dough'&&x.name&&x.grams!==null&&x.grams!==undefined&&Number.isFinite(Number(x.grams))).map(x=>({name:String(x.name),grams:Number(x.grams),kind:x.kind==='flour'?'flour':'other'}));const toppings=(data.ingredients||[]).filter(x=>x.usage==='topping'&&x.name&&x.grams!==null&&Number.isFinite(Number(x.grams))).map(x=>({name:String(x.name),grams:Number(x.grams)}));if(!items.length&&!toppings.length)throw new Error('중량과 사용 구분이 확인된 재료가 없습니다. usage가 unknown인 항목은 직접 확인한 뒤 사용 구분을 dough 또는 topping으로 수정해 주세요.');if(items.length)setIngredientItems(getIngredientItems().filter(x=>x.name||x.grams).concat(items));if(toppings.length)setToppingItems(getToppingItems().filter(x=>x.name||x.grams).concat(toppings));alert('재료 '+items.length+'개, 토핑 '+toppings.length+'개를 추가했습니다. 밀가루 구분과 중량을 다시 확인해 주세요.');}catch(e){alert(e.message)}});
-$('applyProcessAi').addEventListener('click',()=>{try{const data=parseAiJson('processAiResult');if(!Array.isArray(data.stages)||!data.stages.length)throw new Error('반영할 공정이 없습니다.');const inferProcessTitle=(detail)=>{const s=String(detail||'');if(/계량|체치|재료 준비/.test(s))return '재료 준비 및 계량';if(/믹싱|반죽|글루텐|휘핑/.test(s))return '반죽 제조 및 상태 확인';if(/발효|휴지|숙성/.test(s))return '발효 및 반죽 휴지';if(/분할|둥글리기/.test(s))return '분할·둥글리기 및 중간 휴지';if(/성형|팬닝|틀에 담/.test(s))return '성형 및 팬닝';if(/충전|필링|토핑/.test(s))return '충전·토핑 및 굽기 전 마무리';if(/굽|오븐/.test(s))return '굽기 및 냉각';if(/냉각|식힘|장식/.test(s))return '냉각 및 최종 마무리';return '작업 내용 정리';};const stages=data.stages.map(x=>{const detail=String(x.detail||'');let title=String(x.title||'').trim();if(!title||/^(공정\s*)?\d+단계?$|^\d{1,3}$/.test(title))title=inferProcessTitle(detail);return {title,detail,temperature:String(x.temperature||''),time:String(x.time||''),point:String(x.point||'')}}).filter(x=>x.title||x.detail||x.temperature||x.time||x.point);if(!stages.length)throw new Error('공정 내용이 비어 있습니다.');$('processStages').innerHTML='';stages.forEach(x=>addProcessStage(x));alert('기존 제조공정을 교체하고 '+stages.length+'개 공정을 적용했습니다. 필요한 단계는 직접 추가하거나 삭제할 수 있습니다.');}catch(e){alert(e.message)}});
+$('applyProcessAi').addEventListener('click',()=>{try{const data=parseAiJson('processAiResult');if(!Array.isArray(data.stages)||!data.stages.length)throw new Error('반영할 공정이 없습니다.');const inferProcessTitle=(detail)=>{const s=String(detail||'');if(/계량|체치|재료 준비/.test(s))return '재료계량';if(/믹싱|반죽|글루텐|휘핑/.test(s))return '반죽믹싱';if(/1차|일차|1 차/.test(s)&&/발효/.test(s))return '1차발효';if(/2차|이차|2 차/.test(s)&&/발효/.test(s))return '2차발효';if(/발효/.test(s))return '1차발효';if(/분할|둥글리기/.test(s))return '분할 및 둥글리기';if(/성형|팬닝|틀에 담/.test(s))return '성형';if(/굽|오븐/.test(s))return '굽기';return '';};const stages=data.stages.map(x=>{const detail=String(x.detail||'');let title=String(x.title||'').trim();title=inferProcessTitle(title+' '+detail)||title;return {title,detail,temperature:String(x.temperature||''),time:String(x.time||''),point:String(x.point||'')}}).filter(x=>x.title||x.detail||x.temperature||x.time||x.point);if(!stages.length)throw new Error('공정 내용이 비어 있습니다.');$('processStages').innerHTML='';stages.forEach(x=>addProcessStage(x));alert('기존 제조공정을 교체하고 '+stages.length+'개 공정을 적용했습니다. 필요한 단계는 직접 추가하거나 삭제할 수 있습니다.');}catch(e){alert(e.message)}});
 
 // ===== O.BAKERY PROJECT 6.1 · Multi-photo classification + process photo records =====
 let photoClassifyDrafts=[];
@@ -774,14 +792,13 @@ function photoEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<
 // 기본 제빵 공정: 사진이 일부 단계만 보여도 전체 기본 공정 틀을 유지하고,
  // 사진은 해당 단계에만 연결합니다. 시간·온도 등 제품별 조건은 임의 생성하지 않습니다.
 const PHOTO_STAGE_TEMPLATES=[
- {key:'prepare',title:'재료 준비 및 계량',type:'bread',detail:'사용할 재료를 확인하고 각 재료를 정해진 중량에 맞게 계량한다. 가루 재료는 필요에 따라 체에 내려 준비한다.'},
- {key:'mix',title:'반죽 제조 및 믹싱',type:'bread',detail:'계량한 재료를 배합하여 반죽하고, 반죽의 탄력과 글루텐 형성 상태를 확인한다.'},
- {key:'firstferment',title:'1차 발효',type:'bread',detail:'반죽을 발효시켜 부피와 상태 변화를 확인한다.'},
- {key:'divide',title:'분할·둥글리기 및 중간 휴지',type:'bread',detail:'반죽을 정해진 크기로 분할하고 둥글린 뒤, 성형하기 알맞은 상태가 되도록 중간 휴지한다.'},
- {key:'shape',title:'성형 및 팬닝',type:'bread',detail:'반죽을 제품 형태에 맞게 성형하고 팬 또는 틀에 배치한다.'},
- {key:'secondferment',title:'2차 발효',type:'bread',detail:'성형한 반죽을 발효시켜 굽기 전 적절한 부피와 상태로 만든다.'},
- {key:'bake',title:'굽기',type:'bread',detail:'예열된 오븐에서 제품을 굽고 색과 내부 익힘 상태를 확인한다.'},
- {key:'coolfinish',title:'냉각 및 마무리',type:'bread',detail:'구워진 제품을 냉각하고 필요에 따라 마무리 작업을 진행한다.'}
+ {key:'prepare',title:'재료계량',type:'bread',detail:'사용할 재료를 확인하고 각 재료를 정해진 중량에 맞게 계량한다.'},
+ {key:'mix',title:'반죽믹싱',type:'bread',detail:'계량한 재료를 배합하여 반죽하고 반죽의 상태를 확인한다.'},
+ {key:'firstferment',title:'1차발효',type:'bread',detail:'반죽을 발효시키고 부피와 상태 변화를 확인한다.'},
+ {key:'divide',title:'분할 및 둥글리기',type:'bread',detail:'반죽을 정해진 크기로 분할하고 둥글린다.'},
+ {key:'shape',title:'성형',type:'bread',detail:'반죽을 제품 형태에 맞게 성형한다.'},
+ {key:'secondferment',title:'2차발효',type:'bread',detail:'성형한 반죽을 발효시켜 굽기 전 상태를 확인한다.'},
+ {key:'bake',title:'굽기',type:'bread',detail:'오븐에서 제품을 굽고 색과 익힘 상태를 확인한다.'}
 ];
 function renderPhotoDrafts(items,containerId,kind){
  const root=$(containerId);root.innerHTML='';
