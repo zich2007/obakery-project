@@ -19,14 +19,40 @@ button{border:0;border-radius:11px;padding:13px 16px;font-weight:800;cursor:poin
 
 .classification-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px;display:grid;grid-template-columns:105px 1fr;gap:10px;align-items:start}.classification-card img{width:105px;height:92px;object-fit:cover;border-radius:8px}.classification-card label{margin:0 0 5px}.classification-card select{padding:8px;font-size:12px}.classification-card .hint{font-size:11px}.classification-card .remove-photo{margin-top:7px;padding:6px 9px;font-size:11px;background:#f4eeee;color:#875d5d}.v5-badge{font-size:11px;color:#7d6249;background:#f1e8dc;border-radius:30px;padding:5px 9px}
 @media(max-width:600px){.classification-card{grid-template-columns:85px 1fr}.classification-card img{width:85px;height:85px}}
+#ingredientTable th,#ingredientTable td{border-bottom:1px solid var(--line);font-size:12px}#ingredientTable input,#ingredientTable select{padding:8px;font-size:12px;min-width:75px}#ingredientTable .delete-ingredient{padding:7px 9px;background:#f4eeee;color:#875d5d;font-size:11px}
+
+.ingredient-toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0}
+.ingredient-add-buttons{display:flex;gap:8px;flex-wrap:wrap}
+.ingredient-toolbar button{padding:9px 12px;font-size:12px}
+.ingredient-clear{background:#f4eeee;color:#875d5d}
+.ingredient-table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:11px;background:#fff}
+#ingredientTable{width:100%;min-width:720px;border-collapse:collapse;margin:0}
+#ingredientTable th{background:#f2eee6;text-align:left;font-weight:800;white-space:nowrap}
+#ingredientTable th,#ingredientTable td{border-bottom:1px solid var(--line);font-size:12px;padding:8px}
+#ingredientTable tbody tr:last-child td{border-bottom:0}
+#ingredientTable input,#ingredientTable select{padding:9px 8px;font-size:12px;min-width:85px}
+#ingredientTable .ing-name{min-width:135px}
+#ingredientTable .ing-grams{min-width:95px}
+#ingredientTable .ing-percent{font-weight:800;color:#7d6249;white-space:nowrap}
+.ingredient-actions{display:flex;gap:4px;white-space:nowrap}
+.ingredient-actions button{padding:7px 8px;font-size:11px;background:#f2eee6;color:#584a3c}
+.ingredient-actions .delete-ingredient{background:#f4eeee;color:#875d5d}
+.ingredient-actions button:disabled{opacity:.35;cursor:not-allowed}
+.ingredient-summary{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:var(--muted)}
+.ingredient-summary strong{color:var(--ink)}
+
+.remove-upload{display:block;width:100%;margin-top:7px;padding:8px 10px;border-radius:8px;background:#f4eeee;color:#875d5d;font-size:12px;font-weight:800}
+.remove-upload:active{transform:scale(.98)}
+.attachment-thumb .remove-upload{padding:7px 8px;font-size:11px}
+.photo-card{position:relative}
 </style>
 </head>
 <body>
-<header><div class="top"><div class="brand">O.BAKERY PROJECT</div><div class="pill">MY ASSIGNMENT STUDIO · VERSION 5.0</div></div>
-<div class="hero"><div><div class="eyebrow">BAKERY · PASTRY · PRACTICE</div><h1>AI로 정리하고<br>과제 PPT 완성하기</h1><p>사진 자동 분류부터 공정별 배치, 프로젝트 파일 저장까지<br>제과·제빵 실습 과제 제작을 한 곳에서 진행하세요.</p></div><div class="hero-art">🥐</div></div></header>
+<header><div class="top"><div class="brand">O.BAKERY PROJECT</div><div class="pill">MY ASSIGNMENT STUDIO · VERSION 5.2</div></div>
+<div class="hero"><div><div class="eyebrow">BAKERY · PASTRY · PRACTICE</div><h1>실습 기록을 정리하고<br>과제 PPT 완성하기</h1><p>실습 사진 분류부터 재료 배합표 작성, 프로젝트 파일 저장까지<br>제과·제빵 실습 과제 제작을 한 곳에서 진행하세요.</p></div><div class="hero-art">🥐</div></div></header>
 <main>
 <div class="panel" id="v5Workspace" style="border:1px solid #d8c7b2;background:linear-gradient(135deg,#fffefa,#f4eee5)">
- <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap"><div><div class="eyebrow" style="color:#9b7652">VERSION 5.0 · AUTOMATION WORKSPACE</div><h2 style="font-size:22px;margin:7px 0">AI 사진 분류 & 프로젝트 관리</h2><p class="sub" style="margin:0">사진을 한 번에 등록하고 분류 결과를 확인한 뒤 PPT에 반영하세요.</p></div><span class="pill" style="background:#26332f;color:white;border:0">LOCAL PROJECT</span></div>
+ <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap"><div><div class="eyebrow" style="color:#9b7652">VERSION 5.2 · AUTOMATION WORKSPACE</div><h2 style="font-size:22px;margin:7px 0">AI 사진 분류 & 프로젝트 관리</h2><p class="sub" style="margin:0">사진을 한 번에 등록하고 분류 결과를 확인한 뒤 PPT에 반영하세요.</p></div><span class="pill" style="background:#26332f;color:white;border:0">LOCAL PROJECT</span></div>
  <div class="two" style="margin-top:18px">
   <div><label for="allPhotos">전체 실습 사진 일괄 업로드</label><input id="allPhotos" type="file" accept="image/*" multiple><p class="hint">사진은 브라우저에서 미리 확인하고, 프로젝트 파일에 포함해 기기에 저장할 수 있습니다.</p></div>
   <div><label for="aiEndpoint">AI 분류 서버 주소 (선택)</label><input id="aiEndpoint" placeholder="예: https://내-서버/api/classify"><p class="hint">실제 이미지 AI 분류를 사용하려면 호환 API 서버가 필요합니다. 주소가 없으면 파일명 기반 추천과 수동 확인 모드로 작동합니다.</p></div>
@@ -47,6 +73,25 @@ button{border:0;border-radius:11px;padding:13px 16px;font-weight:800;cursor:poin
 <label for="product">제품 품목명 *</label><input id="product" placeholder="예: 소금빵, 마들렌, 크루아상">
 <div class="two"><div><label for="date">실습 날짜</label><input id="date" type="date"></div><div><label for="className">수업명 (선택)</label><input id="className" placeholder="예: 제과실습"></div></div>
 <div class="part-upload"><strong>재료표 · 배합표 이미지 첨부</strong><span class="hint">직접 제작한 재료표, 배합표, 베이커스 퍼센트 정리 이미지를 등록하세요.</span><input id="ingredientImages" type="file" accept="image/*" multiple><div class="attachment-preview" id="ingredientPreview"></div></div>
+<div class="part-upload" id="recipeEditor">
+<strong>재료 계량 · 배합표 작성</strong>
+<p class="hint">재료를 직접 추가하고 사용량(g)을 입력하면 베이커스 퍼센트가 자동 계산됩니다. 모든 밀가루 항목의 합계를 100% 기준으로 계산합니다.</p>
+<div class="ingredient-toolbar">
+  <div class="ingredient-add-buttons">
+    <button type="button" class="ghost" id="addFlour">+ 밀가루 추가</button>
+    <button type="button" class="ghost" id="addIngredient">+ 일반 재료 추가</button>
+  </div>
+  <button type="button" class="ingredient-clear" id="clearIngredients">전체 항목 비우기</button>
+</div>
+<div class="ingredient-table-wrap"><table id="ingredientTable">
+<thead><tr><th>순서</th><th>재료 구분</th><th>재료명</th><th>사용량 (g)</th><th>베이커스 %</th><th>항목 관리</th></tr></thead>
+<tbody id="ingredientRows"></tbody></table></div>
+<div class="ingredient-summary">
+  <span id="ingredientCount">등록 항목: 0개</span>
+  <span id="flourTotal">밀가루 총량: 0 g (기준 100%)</span>
+  <strong id="ingredientTotal">전체 재료 중량: 0 g</strong>
+</div>
+<p class="hint" style="margin-top:8px">밀가루가 여러 종류라면 모든 밀가루 중량을 합산해 100%로 계산합니다. 재료 순서는 위·아래 버튼으로 조정할 수 있으며, 복제 기능으로 비슷한 재료를 빠르게 추가할 수 있습니다.</p>
 </div>
 <div class="panel"><h2><span class="step">03</span>실습 사진</h2><p class="sub">반죽·공정 사진과 완성품 사진 등 과제에 사용할 이미지를 등록하세요.</p>
 <div class="drop" style="min-height:120px">
@@ -85,52 +130,183 @@ button{border:0;border-radius:11px;padding:13px 16px;font-weight:800;cursor:poin
 <label for="discussion">실습 고찰</label><textarea id="discussion" placeholder="실습 결과가 목표와 일치했는지, 결과에 영향을 준 요인은 무엇인지, 문제점과 원인, 다음 실습에서의 개선 방법을 작성하세요."></textarea>
 <div class="part-upload"><strong>고찰 참고 이미지 첨부</strong><span class="hint">실패 사례, 수정 전후 비교, 실습 결과 등을 보여주는 이미지를 등록하세요.</span><input id="discussionImages" type="file" accept="image/*" multiple><div class="attachment-preview" id="discussionPreview"></div></div>
 </div>
-<button class="primary" id="export">PPTX 파일 만들기</button><button class="secondary" id="exportPdf">PDF 파일 만들기</button><button class="secondary" id="save">작성 내용 임시 저장</button>
-<p class="note">PPTX·PDF 생성은 인터넷 연결이 필요합니다. PDF는 PPT와 같은 구성·색상·이미지를 사용해 생성됩니다. 사진과 작성 내용은 이 브라우저 안에서 처리되며 별도 서버로 전송되지 않습니다.</p>
+<button class="primary" id="export">PPTX 파일 만들기</button><button class="secondary" id="save">작성 내용 임시 저장</button>
+<p class="note">PPTX 생성은 인터넷 연결이 필요합니다. 사진과 작성 내용은 이 브라우저 안에서 처리되며 별도 서버로 전송되지 않습니다.</p>
 </section>
 <aside class="side"><div class="panel"><h2>제출자 정보 미리보기</h2><p class="sub">입력한 정보가 PPT에 반영됩니다.</p><div class="profile"><div><strong>이름</strong><span id="previewName">미입력</span></div><div><strong>학과</strong><span id="previewDepartment">미입력</span></div><div><strong>학번</strong><span id="previewStudentId">미입력</span></div></div><h2 style="margin-top:22px">PPT 구성</h2><div class="status"><span>표지</span><b>제품명 · 제출자</b></div><div class="status"><span>제품 소개</span><b>품목 정보</b></div><div class="status"><span>제조 과정</span><b>단계별 상세 기록</b></div><div class="status"><span>관능평가</span><b>내부 · 외부 평가</b></div><div class="status"><span>실습 사진</span><b>전체 사진</b></div><p class="note" style="margin-top:15px">※ 사진만으로 확인하기 어려운 공정 정보는 직접 검토하고 수정해 주세요.</p></div></aside>
 </div></main><footer>O.BAKERY PROJECT · Personal Bakery Assignment Studio</footer>
 <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>\n<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>\n<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script>
 const $=id=>document.getElementById(id);
 let imgs=[];
 const partAttachments={ingredients:[],sensory:[],discussion:[]};
-function renderAttachmentPreview(container,files){container.innerHTML='';files.forEach((item,i)=>{const card=document.createElement('div');card.className='attachment-thumb';const image=document.createElement('img');image.src=item.data;const name=document.createElement('span');name.textContent=item.name||('이미지 '+(i+1));card.append(image,name);container.appendChild(card);});}
-function readImageFiles(fileList,done){const files=Array.from(fileList||[]).filter(f=>f.type.startsWith('image/'));Promise.all(files.map(file=>new Promise(resolve=>{const reader=new FileReader();reader.onload=()=>resolve({name:file.name,data:reader.result});reader.onerror=()=>resolve(null);reader.readAsDataURL(file);}))).then(items=>done(items.filter(Boolean)));}
-[['ingredientImages','ingredients','ingredientPreview'],['sensoryImages','sensory','sensoryPreview'],['discussionImages','discussion','discussionPreview']].forEach(([input,key,preview])=>{$(input).addEventListener('change',e=>readImageFiles(e.target.files,items=>{partAttachments[key]=items;renderAttachmentPreview($(preview),items);}));});
-$('photos').addEventListener('change',e=>{
-  const files=Array.from(e.target.files||[]);
-  imgs=[];
-  const grid=$('photoGrid');grid.innerHTML='';
-  files.forEach((file,index)=>{
-    if(!file.type.startsWith('image/'))return;
-    const reader=new FileReader();
-    reader.onload=()=>{
-      imgs[index]=reader.result;
-      const card=document.createElement('div');card.className='drop';
-      const title=document.createElement('strong');title.textContent='사진 '+(index+1);
-      const image=document.createElement('img');image.src=reader.result;image.style.cssText='width:100%;height:125px;object-fit:cover;border-radius:9px';
-      const caption=document.createElement('span');caption.className='hint';caption.textContent=file.name;
-      card.append(title,image,caption);grid.appendChild(card);
-    };
-    reader.readAsDataURL(file);
+function renderAttachmentPreview(container,files,onRemove){
+ container.innerHTML='';
+ files.forEach((item,i)=>{
+  const card=document.createElement('div');card.className='attachment-thumb';
+  const image=document.createElement('img');image.src=item.data;
+  const name=document.createElement('span');name.textContent=item.name||('이미지 '+(i+1));
+  const remove=document.createElement('button');remove.type='button';remove.className='remove-upload';remove.textContent='사진 삭제';remove.setAttribute('aria-label',(item.name||'첨부 사진')+' 삭제');
+  remove.addEventListener('click',()=>{if(typeof onRemove==='function')onRemove(i);});
+  card.append(image,name,remove);container.appendChild(card);
+ });
+}
+function renderPartAttachment(key,previewId){
+ const redraw=()=>renderAttachmentPreview($(previewId),partAttachments[key],index=>{
+  partAttachments[key].splice(index,1);
+  redraw();
+ });
+ redraw();
+}
+function readImageFiles(fileList,done){
+ const files=Array.from(fileList||[]).filter(f=>f.type.startsWith('image/'));
+ Promise.all(files.map(file=>new Promise(resolve=>{const reader=new FileReader();reader.onload=()=>resolve({name:file.name,data:reader.result});reader.onerror=()=>resolve(null);reader.readAsDataURL(file);}))).then(items=>done(items.filter(Boolean)));
+}
+[['ingredientImages','ingredients','ingredientPreview'],['sensoryImages','sensory','sensoryPreview'],['discussionImages','discussion','discussionPreview']].forEach(([input,key,preview])=>{
+ $(input).addEventListener('change',e=>{
+  readImageFiles(e.target.files,items=>{
+   partAttachments[key].push(...items);
+   const redraw=()=>renderAttachmentPreview($(preview),partAttachments[key],removeIndex=>{
+    partAttachments[key].splice(removeIndex,1);
+    redraw();
+   });
+   redraw();
   });
-  $('photoCount').textContent='선택된 사진 '+files.filter(f=>f.type.startsWith('image/')).length+'장';
+  e.target.value='';
+ });
 });
+function renderMainPhotos(){
+ const grid=$('photoGrid');grid.innerHTML='';
+ imgs.forEach((data,index)=>{
+  if(!data)return;
+  const card=document.createElement('div');card.className='drop photo-card';
+  const title=document.createElement('strong');title.textContent='사진 '+(index+1);
+  const image=document.createElement('img');image.src=data;image.style.cssText='width:100%;height:125px;object-fit:cover;border-radius:9px';
+  const remove=document.createElement('button');remove.type='button';remove.className='remove-upload';remove.textContent='사진 삭제';
+  remove.addEventListener('click',()=>{imgs.splice(index,1);renderMainPhotos();});
+  card.append(title,image,remove);grid.appendChild(card);
+ });
+ $('photoCount').textContent='선택된 사진 '+imgs.filter(Boolean).length+'장';
+}
+$('photos').addEventListener('change',e=>{
+ readImageFiles(e.target.files,items=>{
+  imgs.push(...items.map(item=>item.data));
+  renderMainPhotos();
+ });
+ e.target.value='';
+});
+// Manual ingredient editor + baker's percentage calculator
+function addIngredientRow(item={}, focusName=false){
+ const tr=document.createElement('tr');
+ tr.innerHTML=`<td class="ing-order" style="white-space:nowrap"></td>
+ <td><select class="ing-kind" aria-label="재료 구분"><option value="other">일반 재료</option><option value="flour">밀가루</option></select></td>
+ <td><input class="ing-name" aria-label="재료명" placeholder="예: 강력분"></td>
+ <td><input class="ing-grams" aria-label="사용량(g)" type="number" min="0" step="0.1" inputmode="decimal" placeholder="예: 500"></td>
+ <td class="ing-percent">—</td>
+ <td><div class="ingredient-actions">
+   <button type="button" class="move-up" aria-label="위로 이동" title="위로 이동">↑</button>
+   <button type="button" class="move-down" aria-label="아래로 이동" title="아래로 이동">↓</button>
+   <button type="button" class="duplicate-ingredient" title="항목 복제">복제</button>
+   <button type="button" class="delete-ingredient" title="항목 삭제">삭제</button>
+ </div></td>`;
+ tr.querySelector('.ing-kind').value=item.kind==='flour'?'flour':'other';
+ tr.querySelector('.ing-name').value=item.name||'';
+ tr.querySelector('.ing-grams').value=item.grams??'';
+ tr.querySelectorAll('input,select').forEach(el=>{
+   el.addEventListener('input',updateIngredientTotals);
+   el.addEventListener('change',updateIngredientTotals);
+ });
+ $('ingredientRows').appendChild(tr);
+ updateIngredientTotals();
+ if(focusName)tr.querySelector('.ing-name').focus();
+ return tr;
+}
+function getIngredientItems(){
+ return Array.from($('ingredientRows').querySelectorAll('tr')).map(tr=>({
+  kind:tr.querySelector('.ing-kind').value,
+  name:tr.querySelector('.ing-name').value.trim(),
+  grams:Math.max(0,parseFloat(tr.querySelector('.ing-grams').value)||0)
+ }));
+}
+function updateIngredientTotals(){
+ const rows=Array.from($('ingredientRows').querySelectorAll('tr'));
+ const items=getIngredientItems();
+ const flour=items.filter(x=>x.kind==='flour').reduce((a,x)=>a+x.grams,0);
+ const total=items.reduce((a,x)=>a+x.grams,0);
+ rows.forEach((tr,i)=>{
+  const v=items[i];
+  tr.querySelector('.ing-order').textContent=(i+1);
+  tr.querySelector('.ing-percent').textContent=flour>0&&v.grams>0?(v.grams/flour*100).toFixed(1)+'%':'—';
+  tr.querySelector('.move-up').disabled=i===0;
+  tr.querySelector('.move-down').disabled=i===rows.length-1;
+ });
+ $('ingredientCount').textContent='등록 항목: '+rows.length+'개';
+ $('flourTotal').textContent='밀가루 총량: '+flour.toLocaleString('ko-KR')+' g (기준 100%)';
+ $('ingredientTotal').textContent='전체 재료 중량: '+total.toLocaleString('ko-KR')+' g';
+}
+function setIngredientItems(items){
+ $('ingredientRows').innerHTML='';
+ (items||[]).forEach(item=>addIngredientRow(item));
+ updateIngredientTotals();
+}
+
+// Event delegation: works for rows created later and avoids lost handlers.
+(function bindIngredientEditor(){
+ const editor=$('recipeEditor');
+ if(!editor || editor.dataset.bound==='1')return;
+ editor.dataset.bound='1';
+ editor.addEventListener('input',event=>{
+  if(event.target.matches('.ing-kind,.ing-name,.ing-grams'))updateIngredientTotals();
+ });
+ editor.addEventListener('change',event=>{
+  if(event.target.matches('.ing-kind,.ing-name,.ing-grams'))updateIngredientTotals();
+ });
+ editor.addEventListener('click',event=>{
+  const button=event.target.closest('button');
+  if(!button || !editor.contains(button))return;
+  event.preventDefault();
+  if(button.id==='addFlour'){addIngredientRow({kind:'flour'},true);return;}
+  if(button.id==='addIngredient'){addIngredientRow({kind:'other'},true);return;}
+  if(button.id==='clearIngredients'){
+   if($('ingredientRows').children.length && confirm('재료표의 모든 항목을 삭제할까요?'))setIngredientItems([]);
+   return;
+  }
+  const row=button.closest('tr');
+  if(!row)return;
+  if(button.classList.contains('delete-ingredient')){row.remove();updateIngredientTotals();return;}
+  if(button.classList.contains('move-up')){
+   const prev=row.previousElementSibling;
+   if(prev)row.parentNode.insertBefore(row,prev);
+   updateIngredientTotals();return;
+  }
+  if(button.classList.contains('move-down')){
+   const next=row.nextElementSibling;
+   if(next)row.parentNode.insertBefore(next,row);
+   updateIngredientTotals();return;
+  }
+  if(button.classList.contains('duplicate-ingredient')){
+   const copy={kind:row.querySelector('.ing-kind').value,name:row.querySelector('.ing-name').value,grams:row.querySelector('.ing-grams').value};
+   const clone=addIngredientRow(copy,false);
+   row.parentNode.insertBefore(clone,row.nextElementSibling);
+   clone.querySelector('.ing-name').focus();
+   updateIngredientTotals();
+  }
+ });
+})();
 function processData(){return Array.from(document.querySelectorAll('.process-stage')).map(card=>({title:card.querySelector('.stage-title').value.trim(),detail:card.querySelector('.stage-detail').value.trim(),temperature:card.querySelector('.stage-temperature').value.trim(),time:card.querySelector('.stage-time').value.trim(),point:card.querySelector('.stage-point').value.trim(),images:JSON.parse(card.dataset.images||'[]')}));}
 function addProcessStage(stage={}){const wrap=document.createElement('div');wrap.className='process-stage';wrap.innerHTML=`<div class="process-stage-head"><strong class="stage-number">공정 단계</strong><button type="button" class="remove-stage">단계 삭제</button></div><div class="stage-fields"><div class="wide"><label>공정명</label><input class="stage-title" placeholder="예: 재료 계량 및 준비"></div><div class="wide"><label>작업 내용 및 반죽·제품 상태</label><textarea class="stage-detail" placeholder="예: 각 재료를 정확히 계량한 뒤, 유지와 액체 재료의 상태를 확인했다. 가루 재료는 체에 내려 뭉침을 제거했다."></textarea></div><div><label>온도 및 조건</label><input class="stage-temperature" placeholder="예: 반죽 온도 24℃ / 실온"></div><div><label>소요 시간</label><input class="stage-time" placeholder="예: 믹싱 8~10분"></div><div class="wide"><label>주의사항 및 확인 사항</label><textarea class="stage-point" placeholder="예: 재료가 한쪽에 뭉치지 않도록 하고, 믹싱 종료 시 반죽의 탄력과 글루텐 형성을 확인했다."></textarea></div><div class="wide part-upload"><strong>이 공정의 참고 이미지 첨부</strong><span class="hint">공정 사진, 반죽 상태, 성형 과정, 발효 상태 등을 등록하세요.</span><input class="stage-images" type="file" accept="image/*" multiple><div class="attachment-preview stage-image-preview"></div></div></div>`;
 wrap.querySelector('.stage-title').value=stage.title||'';wrap.querySelector('.stage-detail').value=stage.detail||'';wrap.querySelector('.stage-temperature').value=stage.temperature||'';wrap.querySelector('.stage-time').value=stage.time||'';wrap.querySelector('.stage-point').value=stage.point||'';
-wrap.querySelector('.remove-stage').onclick=()=>{wrap.remove();renumberStages()};wrap.dataset.images=JSON.stringify(stage.images||[]);wrap.querySelector('.stage-images').addEventListener('change',e=>readImageFiles(e.target.files,items=>{wrap.dataset.images=JSON.stringify(items);renderAttachmentPreview(wrap.querySelector('.stage-image-preview'),items);}));if(stage.images){renderAttachmentPreview(wrap.querySelector('.stage-image-preview'),stage.images);} $('processStages').appendChild(wrap);renumberStages();}
+wrap.querySelector('.remove-stage').onclick=()=>{wrap.remove();renumberStages()};wrap.dataset.images=JSON.stringify(stage.images||[]);const stagePreview=wrap.querySelector('.stage-image-preview');const renderStageImages=()=>{const current=JSON.parse(wrap.dataset.images||'[]');renderAttachmentPreview(stagePreview,current,index=>{current.splice(index,1);wrap.dataset.images=JSON.stringify(current);renderStageImages();});};wrap.querySelector('.stage-images').addEventListener('change',e=>readImageFiles(e.target.files,items=>{const current=JSON.parse(wrap.dataset.images||'[]');wrap.dataset.images=JSON.stringify(current.concat(items));renderStageImages();}));if(stage.images){renderStageImages();} $('processStages').appendChild(wrap);renumberStages();}
 function renumberStages(){document.querySelectorAll('.process-stage').forEach((card,i)=>card.querySelector('.stage-number').textContent='공정 '+(i+1));}
 $('addProcessStage').onclick=()=>addProcessStage();
 // 초기 버전의 제조공정 예시로 복원: 기본 9단계를 미리 배치
-// 공정 입력은 빈 상태로 시작합니다. 사용자가 필요한 단계만 추가합니다.
-function data(){return {studentName:$('studentName').value.trim(),studentDepartment:$('studentDepartment').value.trim(),studentId:$('studentId').value.trim(),product:$('product').value.trim(),date:$('date').value,className:$('className').value,processStages:processData(),attachments:partAttachments,senseOrganization:$('senseOrganization').value,senseCrumb:$('senseCrumb').value,senseInnerColor:$('senseInnerColor').value,senseAroma:$('senseAroma').value,senseTaste:$('senseTaste').value,senseVolume:$('senseVolume').value,senseCrustColor:$('senseCrustColor').value,senseBalance:$('senseBalance').value,senseBaking:$('senseBaking').value,senseFracturability:$('senseFracturability').value,discussion:$('discussion').value}}
+['재료 계량 및 준비','반죽 및 믹싱','1차 발효 또는 휴지','분할 및 둥글리기','중간 발효','성형','2차 발효','굽기','냉각 및 마무리'].forEach(title=>addProcessStage({title}));
+function data(){return {studentName:$('studentName').value.trim(),studentDepartment:$('studentDepartment').value.trim(),studentId:$('studentId').value.trim(),product:$('product').value.trim(),date:$('date').value,className:$('className').value,ingredients:getIngredientItems(),processStages:processData(),attachments:partAttachments,senseOrganization:$('senseOrganization').value,senseCrumb:$('senseCrumb').value,senseInnerColor:$('senseInnerColor').value,senseAroma:$('senseAroma').value,senseTaste:$('senseTaste').value,senseVolume:$('senseVolume').value,senseCrustColor:$('senseCrustColor').value,senseBalance:$('senseBalance').value,senseBaking:$('senseBaking').value,senseFracturability:$('senseFracturability').value,discussion:$('discussion').value}}
 $('save').onclick=()=>{localStorage.setItem('obakeryDraft',JSON.stringify(data()));alert('현재 작성 내용을 이 브라우저에 임시 저장했습니다.')};
 function updateProfilePreview(){const d=data();$('previewName').textContent=d.studentName||'미입력';$('previewDepartment').textContent=d.studentDepartment||'미입력';$('previewStudentId').textContent=d.studentId||'미입력'}
 ['studentName','studentDepartment','studentId'].forEach(id=>$(id).addEventListener('input',updateProfilePreview));
-try{const d=JSON.parse(localStorage.getItem('obakeryDraft')||'null');if(d){Object.keys(d).forEach(k=>{if($(k))$(k).value=d[k]});if(Array.isArray(d.processStages)){ $('processStages').innerHTML=''; d.processStages.forEach(stage=>addProcessStage(stage));}if(d.attachments){Object.keys(partAttachments).forEach(k=>{partAttachments[k]=d.attachments[k]||[];});renderAttachmentPreview($('ingredientPreview'),partAttachments.ingredients);renderAttachmentPreview($('sensoryPreview'),partAttachments.sensory);renderAttachmentPreview($('discussionPreview'),partAttachments.discussion);}}}catch(e){}
+try{const d=JSON.parse(localStorage.getItem('obakeryDraft')||'null');if(d){Object.keys(d).forEach(k=>{if($(k))$(k).value=d[k]});if(Array.isArray(d.ingredients))setIngredientItems(d.ingredients);if(Array.isArray(d.processStages)){ $('processStages').innerHTML=''; d.processStages.forEach(stage=>addProcessStage(stage));}if(d.attachments){Object.keys(partAttachments).forEach(k=>{partAttachments[k]=d.attachments[k]||[];});renderPartAttachment('ingredients','ingredientPreview');renderPartAttachment('sensory','sensoryPreview');renderPartAttachment('discussion','discussionPreview');}}}catch(e){}
 updateProfilePreview();
 function addText(slide,text,x,y,w,h,opt={}){slide.addText(text,{x,y,w,h,fontFace:'Aptos',fontSize:opt.size||18,color:opt.color||'26332F',breakLine:false,margin:0,fit:'shrink',valign:'mid',bold:!!opt.bold,...opt})}
 $('export').onclick=async()=>{const d=data();if(!d.product){alert('제품 품목명을 입력해 주세요.');$('product').focus();return}if(typeof pptxgen==='undefined'){alert('PPT 생성 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.');return}
@@ -139,6 +315,7 @@ const dark='26332F',gold='A7835F',cream='F7F5EF',muted='707B74';
 function base(slide,kicker,title){slide.background={color:cream};addText(slide,kicker.toUpperCase(),.65,.38,11.8,.25,{size:9,bold:true,color:gold,charSpacing:2});addText(slide,title,.65,.82,11.8,.6,{size:27,bold:true,color:dark});slide.addShape(pptx.ShapeType.line,{x:.65,y:1.58,w:12,h:0,line:{color:'DCD7CA',width:1}});addText(slide,'O.BAKERY PROJECT',.65,7.12,5,.18,{size:8,color:muted});}
 let s=pptx.addSlide();s.background={color:dark};addText(s,'BAKERY · PASTRY · PRACTICE',.85,.85,11,.3,{size:11,bold:true,color:'D7B895',charSpacing:2});addText(s,d.product, .85,1.7,11.5,1.15,{size:34,bold:true,color:'FFFFFF'});addText(s,'실습 과제 보고서',.88,3.05,8,.45,{size:20,color:'E3E7E2'});s.addShape(pptx.ShapeType.line,{x:.88,y:4.1,w:11.3,h:0,line:{color:gold,width:1.5}});const submitter=[d.studentName,d.studentDepartment,d.studentId].filter(Boolean).join('  |  ');if(submitter)addText(s,submitter,.88,4.42,11,.35,{size:15,color:'FFFFFF'});addText(s,d.date||'실습 날짜 미기재',.88,5.0,6,.25,{size:11,color:'D5DDD7'});
 s=pptx.addSlide();base(s,'01 · Product overview','제품 소개');addText(s,d.product, .8,1.95,11.6,.65,{size:29,bold:true});addText(s,'품목명',.82,2.9,2,.3,{size:12,bold:true,color:gold});addText(s,d.product,2.4,2.85,9,.4,{size:17});if(d.className)addText(s,'수업명: '+d.className,.82,3.55,10,.35,{size:14,color:muted});const submitterInfo=[d.studentName,d.studentDepartment,d.studentId].filter(Boolean).join(' / ');if(submitterInfo)addText(s,'제출자: '+submitterInfo,.82,4.2,11,.4,{size:15,color:dark});
+if(d.ingredients&&d.ingredients.length){s=pptx.addSlide();base(s,'02 · Ingredients & weighing','재료 계량 및 배합표');const flourTotal=d.ingredients.filter(v=>v.kind==='flour').reduce((a,v)=>a+(Number(v.grams)||0),0);addText(s,'밀가루 총량 '+flourTotal.toLocaleString('ko-KR')+' g = 100%',.85,1.72,11.4,.32,{size:15,bold:true,color:gold});const rows=[['구분','재료명','사용량 (g)','베이커스 %']];d.ingredients.forEach(v=>rows.push([v.kind==='flour'?'밀가루':'일반 재료',v.name||'미입력',String(v.grams||0),flourTotal>0?((Number(v.grams)||0)/flourTotal*100).toFixed(1)+'%':'—']));s.addTable(rows,{x:.8,y:2.18,w:11.7,h:4.35,border:{type:'solid',color:'DCD7CA',pt:.6},fill:'FFFFFF',color:dark,fontFace:'Aptos',fontSize:12,breakLine:false,margin:0.08,autoFit:false,colW:[2.1,4.6,2.2,2.2],rowH:0.38});addText(s,'전체 재료 중량: '+d.ingredients.reduce((a,v)=>a+(Number(v.grams)||0),0).toLocaleString('ko-KR')+' g',.85,6.72,10,.25,{size:11,color:muted});}
 const completedStages=(d.processStages||[]).filter(v=>v.title||v.detail||v.temperature||v.time||v.point);
 if(!completedStages.length){s=pptx.addSlide();base(s,'02 · Manufacturing process','제조 과정');addText(s,'제조 공정이 아직 작성되지 않았습니다. 각 단계의 작업 내용과 조건을 입력해 주세요.',.9,2.0,11.2,2.2,{size:18,valign:'top'});}
 completedStages.forEach((v,i)=>{s=pptx.addSlide();base(s,'02 · Manufacturing process · '+String(i+1).padStart(2,'0'),'제조 과정 '+(i+1));addText(s,v.title||('공정 '+(i+1)),.9,1.85,11.2,.48,{size:22,bold:true,color:gold});addText(s,'작업 내용 및 상태',.9,2.55,5.2,.28,{size:13,bold:true,color:dark});addText(s,v.detail||'미작성',.9,2.9,11.2,1.15,{size:15,valign:'top'});addText(s,'온도 및 조건',.9,4.25,2.4,.28,{size:13,bold:true,color:dark});addText(s,v.temperature||'미기록',.9,4.6,4.9,.42,{size:14});addText(s,'소요 시간',6.3,4.25,2.4,.28,{size:13,bold:true,color:dark});addText(s,v.time||'미기록',6.3,4.6,5.4,.42,{size:14});addText(s,'주의사항 및 확인 사항',.9,5.35,5.2,.28,{size:13,bold:true,color:dark});addText(s,v.point||'미작성',.9,5.7,11.2,.9,{size:14,valign:'top'});if(v.images&&v.images.length){v.images.forEach((img,j)=>{s=pptx.addSlide();base(s,'Process reference image '+(i+1)+' · '+(j+1),(v.title||('공정 '+(i+1)))+' 참고 이미지 '+(j+1));s.addImage({data:img.data,x:1.05,y:1.85,w:11.2,h:4.95,sizingCrop:true});});}});
@@ -168,7 +345,7 @@ $('clearPhotosBtn').onclick=()=>{if(confirm('일괄 업로드 사진을 모두 �
 // Extend the original v4.2 data model without removing its existing fields.
 const v4DataFn=data; data=function(){const d=v4DataFn();d.v5Photos=v5Photos;d.v5Approved=v5Approved;d.aiEndpoint=$('aiEndpoint').value.trim();return d};
 function v5Restore(d){if(d.aiEndpoint)$('aiEndpoint').value=d.aiEndpoint;v5Photos=Array.isArray(d.v5Photos)?d.v5Photos:[];v5Approved=!!d.v5Approved;v5Render();}
-function v5ApplyProject(d){Object.keys(d).forEach(k=>{if($(k)&&!['photos','allPhotos','projectFile'].includes(k))$(k).value=d[k]??''});if(Array.isArray(d.processStages)){$('processStages').innerHTML='';d.processStages.forEach(stage=>addProcessStage(stage))}if(d.attachments){Object.keys(partAttachments).forEach(k=>partAttachments[k]=d.attachments[k]||[]);renderAttachmentPreview($('ingredientPreview'),partAttachments.ingredients);renderAttachmentPreview($('sensoryPreview'),partAttachments.sensory);renderAttachmentPreview($('discussionPreview'),partAttachments.discussion)}['senseOrganization','senseCrumb','senseInnerColor','senseAroma','senseTaste','senseVolume','senseCrustColor','senseBalance','senseBaking','senseFracturability','discussion'].forEach(k=>{if($(k)&&d[k]!=null)$(k).value=d[k]});v5Restore(d);updateProfilePreview()}
+function v5ApplyProject(d){if(Array.isArray(d.ingredients))setIngredientItems(d.ingredients);Object.keys(d).forEach(k=>{if($(k)&&!['photos','allPhotos','projectFile'].includes(k))$(k).value=d[k]??''});if(Array.isArray(d.processStages)){$('processStages').innerHTML='';d.processStages.forEach(stage=>addProcessStage(stage))}if(d.attachments){Object.keys(partAttachments).forEach(k=>partAttachments[k]=d.attachments[k]||[]);renderPartAttachment('ingredients','ingredientPreview');renderPartAttachment('sensory','sensoryPreview');renderPartAttachment('discussion','discussionPreview')}['senseOrganization','senseCrumb','senseInnerColor','senseAroma','senseTaste','senseVolume','senseCrustColor','senseBalance','senseBaking','senseFracturability','discussion'].forEach(k=>{if($(k)&&d[k]!=null)$(k).value=d[k]});v5Restore(d);updateProfilePreview()}
 $('saveProject').onclick=async()=>{const d=data();if(!d.product&&!confirm('제품명이 비어 있습니다. 그래도 프로젝트를 저장할까요?'))return;try{if(typeof JSZip==='undefined')throw new Error('프로젝트 압축 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.');const zip=new JSZip();zip.file('project.json',JSON.stringify(d));zip.file('README.txt','O.BAKERY PROJECT 5.0 프로젝트 파일\n이 파일을 사이트의 프로젝트 불러오기로 열 수 있습니다.');const blob=await zip.generateAsync({type:'blob'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(d.product||'bakery_project').replace(/[\\/:*?"<>|]/g,'_')+'.obakery';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500)}catch(e){alert('프로젝트 저장 실패: '+e.message)}};
 $('loadProject').onclick=()=>$('projectFile').click();$('projectFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{let d;if(f.name.endsWith('.obakery')){if(typeof JSZip==='undefined')throw new Error('JSZip을 불러오지 못했습니다.');const z=await JSZip.loadAsync(f);const file=z.file('project.json');if(!file)throw new Error('project.json이 없습니다.');d=JSON.parse(await file.async('string'))}else d=JSON.parse(await f.text());v5ApplyProject(d);alert('프로젝트를 불러왔습니다.')}catch(err){alert('프로젝트를 열 수 없습니다: '+err.message)}e.target.value=''};
 // Include classified images in the presentation, grouped by user-confirmed stage.
@@ -176,62 +353,5 @@ const oldExportHandler=$('export').onclick;$('export').onclick=async()=>{if(v5Ph
 // Store v5 draft in local storage when the original save control is used.
 const oldSaveHandler=$('save').onclick;$('save').onclick=()=>{try{localStorage.setItem('obakeryDraftV5',JSON.stringify(data()))}catch(e){alert('브라우저 임시 저장 공간이 부족할 수 있습니다. .obakery 프로젝트 저장을 이용해 주세요.');return}oldSaveHandler()};
 try{const v5d=JSON.parse(localStorage.getItem('obakeryDraftV5')||'null');if(v5d){v5ApplyProject(v5d)}}catch(e){}
-
-
-// ===== PDF export: same 16:9 slide structure, palette, typography and images as PPTX =====
-function pdfEscape(v){return String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])).replace(/\n/g,'<br>');}
-function pdfSlideHTML(kicker,title,body,cover=false){
-  const dark='#26332F', gold='#A7835F', cream='#F7F5EF', muted='#707B74';
-  return `<section class="ob-pdf-slide" style="width:1280px;height:720px;box-sizing:border-box;position:relative;overflow:hidden;background:${cover?dark:cream};color:${cover?'#fff':dark};font-family:Arial,'Noto Sans KR',sans-serif;padding:62px 64px;">
-  ${cover
-    ? `<div style="font-size:18px;letter-spacing:4px;color:#D7B895;font-weight:700;margin-bottom:78px">BAKERY · PASTRY · PRACTICE</div><div style="font-size:58px;font-weight:800;line-height:1.2;max-height:150px;overflow:hidden">${pdfEscape(title)}</div><div style="font-size:29px;color:#E3E7E2;margin-top:34px">실습 과제 보고서</div><div style="height:2px;background:${gold};margin:58px 0 32px"></div>${body}`
-    : `<div style="font-size:14px;font-weight:700;letter-spacing:3px;color:${gold};text-transform:uppercase">${pdfEscape(kicker)}</div><div style="font-size:38px;font-weight:800;margin-top:22px">${pdfEscape(title)}</div><div style="height:1px;background:#DCD7CA;margin:26px 0 28px"></div>${body}<div style="position:absolute;bottom:24px;left:64px;color:${muted};font-size:13px">O.BAKERY PROJECT</div>`}
-  </section>`;
-}
-function pdfText(label,value){return `<div style="margin:0 0 22px"><div style="font-size:19px;font-weight:700;color:#A7835F;margin-bottom:8px">${pdfEscape(label)}</div><div style="font-size:20px;line-height:1.55;overflow-wrap:anywhere">${pdfEscape(value||'미작성')}</div></div>`;}
-function pdfImage(data,caption=''){return `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:520px"><img src="${data}" style="max-width:100%;max-height:480px;object-fit:contain"><div style="font-size:14px;color:#707B74;margin-top:8px">${pdfEscape(caption)}</div></div>`;}
-async function createOBAKERYPDF(){
-  const d=data();
-  if(!d.product){alert('제품 품목명을 입력해 주세요.');$('product').focus();return;}
-  if(typeof html2canvas==='undefined'||!window.jspdf){alert('PDF 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인한 뒤 다시 시도해 주세요.');return;}
-  if(v5Photos.length&&!v5Approved&&!confirm('사진 분류 결과를 아직 확인 완료하지 않았습니다. 현재 분류 상태로 PDF를 생성할까요?'))return;
-  const slides=[];
-  const submitter=[d.studentName,d.studentDepartment,d.studentId].filter(Boolean).join('  |  ');
-  slides.push(pdfSlideHTML('','',`<div style="font-size:23px;color:#fff">${pdfEscape(submitter||'')}</div><div style="font-size:19px;color:#D5DDD7;margin-top:22px">${pdfEscape(d.date||'실습 날짜 미기재')}</div>`,true).replace('font-size:58px;font-weight:800;line-height:1.2;max-height:150px;overflow:hidden"></div>','font-size:58px;font-weight:800;line-height:1.2;max-height:150px;overflow:hidden">${pdfEscape(d.product)}</div>'));
-  slides.push(pdfSlideHTML('01 · Product overview','제품 소개',`<div style="font-size:42px;font-weight:800;margin:30px 0">${pdfEscape(d.product)}</div>${pdfText('품목명',d.product)}${d.className?pdfText('수업명',d.className):''}${submitter?pdfText('제출자',submitter):''}`));
-  const stages=(d.processStages||[]).filter(x=>x.title||x.detail||x.temperature||x.time||x.point||(x.images||[]).length);
-  if(!stages.length) slides.push(pdfSlideHTML('02 · Manufacturing process','제조 과정',`<div style="font-size:24px;margin-top:70px">제조 공정이 아직 작성되지 않았습니다. 각 단계의 작업 내용과 조건을 입력해 주세요.</div>`));
-  stages.forEach((v,i)=>{
-    slides.push(pdfSlideHTML(`02 · Manufacturing process · ${String(i+1).padStart(2,'0')}`,'제조 과정 '+(i+1),
-      `<div style="font-size:29px;font-weight:800;color:#A7835F;margin-bottom:24px">${pdfEscape(v.title||('공정 '+(i+1)))}</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 38px">
-      <div style="grid-column:1/-1">${pdfText('작업 내용 및 상태',v.detail)}</div>
-      ${pdfText('온도 및 조건',v.temperature||'미기록')}${pdfText('소요 시간',v.time||'미기록')}
-      <div style="grid-column:1/-1">${pdfText('주의사항 및 확인 사항',v.point)}</div></div>`));
-    (v.images||[]).forEach((im,j)=>slides.push(pdfSlideHTML(`Process reference image ${i+1} · ${j+1}`,`${v.title||'공정 '+(i+1)} 참고 이미지 ${j+1}`,pdfImage(im.data,im.name))));
-  });
-  const groups=[{k:'03 · Internal evaluation',t:'관능평가 · 내부 평가',items:[['조직',d.senseOrganization],['기공',d.senseCrumb],['속색',d.senseInnerColor],['향',d.senseAroma],['맛',d.senseTaste]]},{k:'04 · External evaluation',t:'관능평가 · 외부 평가',items:[['부피',d.senseVolume],['껍질색',d.senseCrustColor],['외형의 균형',d.senseBalance],['굽기의 균일함',d.senseBaking],['파쇄성',d.senseFracturability]]}];
-  groups.forEach(g=>slides.push(pdfSlideHTML(g.k,g.t,`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 40px">${g.items.map(([a,b])=>pdfText(a,b)).join('')}</div>`)));
-  slides.push(pdfSlideHTML('05 · Discussion','고찰',`<div style="font-size:24px;line-height:1.7;white-space:normal">${pdfEscape(d.discussion||'실습 결과, 문제점의 원인 및 개선 방향을 작성해 주세요.')}</div>`));
-  (imgs||[]).filter(Boolean).forEach((im,i)=>slides.push(pdfSlideHTML('Practice photo '+(i+1),'실습 사진 '+(i+1),pdfImage(im))));
-  [['재료표 · 배합표 이미지',partAttachments.ingredients],['관능평가 참고 이미지',partAttachments.sensory],['고찰 참고 이미지',partAttachments.discussion]].forEach(([title,items])=>(items||[]).forEach((im,i)=>slides.push(pdfSlideHTML('Assignment reference image',title+' '+(i+1),pdfImage(im.data,im.name)))));
-  if(v5Photos.length){const by={};v5Photos.forEach(p=>{if(p.category==='기타 / 미분류')return;(by[p.category]??=[]).push(p)});Object.entries(by).forEach(([cat,items])=>{for(let i=0;i<items.length;i+=4){const batch=items.slice(i,i+4);const cells=batch.map(p=>`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:250px"><img src="${p.data}" style="max-width:100%;max-height:215px;object-fit:contain"><div style="font-size:13px;color:#707B74;margin-top:6px">${pdfEscape(p.name)}</div></div>`).join('');slides.push(pdfSlideHTML('V5 · Process photo selection',cat,`<div style="display:grid;grid-template-columns:${batch.length===1?'1fr':'1fr 1fr'};gap:16px">${cells}</div>`));}})}
-  const host=document.createElement('div');host.style.cssText='position:fixed;left:-20000px;top:0;width:1280px;z-index:-1';host.innerHTML=slides.join('');document.body.appendChild(host);
-  const {jsPDF}=window.jspdf;const pdf=new jsPDF({orientation:'landscape',unit:'pt',format:[960,540],compress:true});
-  try{
-    const pages=Array.from(host.children);
-    for(let i=0;i<pages.length;i++){
-      const canvas=await html2canvas(pages[i],{scale:1.35,useCORS:true,backgroundColor:null,logging:false});
-      const image=canvas.toDataURL('image/jpeg',0.91);
-      if(i)pdf.addPage([960,540],'landscape');
-      pdf.addImage(image,'JPEG',0,0,960,540,undefined,'FAST');
-      canvas.width=canvas.height=1;
-    }
-    const safe=(d.product||'베이커리').replace(/[\\/:*?"<>|]/g,'_');
-    pdf.save(`${safe}_실습과제${d.studentName?'_'+d.studentName.replace(/[\\/:*?"<>|]/g,'_'):''}.pdf`);
-  }catch(err){alert('PDF 생성 중 오류가 발생했습니다: '+err.message)}
-  finally{host.remove();}
-}
-$('exportPdf').onclick=createOBAKERYPDF;
 
 </script></body></html>
