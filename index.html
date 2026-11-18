@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>O.BAKERY PROJECT | Assignment Studio</title>
+<title>O.BAKERY PROJECT 5.6 | Assignment Studio</title>
 <style>
 :root{--ink:#26332f;--muted:#78827d;--cream:#f7f5ef;--paper:#fffefa;--line:#e7e4db;--accent:#9b7652;--sage:#e7eee7}
 *{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,"Noto Sans KR",Arial,sans-serif}
@@ -54,16 +54,16 @@ button{border:0;border-radius:11px;padding:13px 16px;font-weight:800;cursor:poin
 </style>
 </head>
 <body>
-<header><div class="top"><div class="brand">O.BAKERY PROJECT</div><div class="pill">MY ASSIGNMENT STUDIO · VERSION 5.2</div></div>
-<div class="hero"><div><div class="eyebrow">BAKERY · PASTRY · PRACTICE</div><h1>실습 기록을 정리하고<br>과제 PPT 완성하기</h1><p>실습 사진 분류부터 재료 배합표 작성, 프로젝트 파일 저장까지<br>제과·제빵 실습 과제 제작을 한 곳에서 진행하세요.</p></div><div class="hero-art">🥐</div></div></header>
+<header><div class="top"><div class="brand">O.BAKERY PROJECT</div><div class="pill">MY ASSIGNMENT STUDIO · VERSION 5.6</div></div>
+<div class="hero"><div><div class="eyebrow">BAKERY · PASTRY · PRACTICE</div><h1>실습 기록을 정리하고<br>과제 PPT 완성하기</h1><p>실습 사진 정리부터 재료 배합표 작성, 프로젝트 파일 저장까지<br>제과·제빵 실습 과제 제작을 한 곳에서 진행하세요.</p></div><div class="hero-art">🥐</div></div></header>
 <main>
 <div class="panel" id="v5Workspace" style="border:1px solid #d8c7b2;background:linear-gradient(135deg,#fffefa,#f4eee5)">
- <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap"><div><div class="eyebrow" style="color:#9b7652">VERSION 5.2 · AUTOMATION WORKSPACE</div><h2 style="font-size:22px;margin:7px 0">AI 사진 분류 & 프로젝트 관리</h2><p class="sub" style="margin:0">사진을 한 번에 등록하고 분류 결과를 확인한 뒤 PPT에 반영하세요.</p></div><span class="pill" style="background:#26332f;color:white;border:0">LOCAL PROJECT</span></div>
+ <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap"><div><div class="eyebrow" style="color:#9b7652">VERSION 5.6 · MANUAL REVIEW WORKSPACE</div><h2 style="font-size:22px;margin:7px 0">실습 사진 분류 & 프로젝트 관리</h2><p class="sub" style="margin:0">사진을 등록하고 공정을 직접 확인·수정한 뒤 PPT에 반영하세요.</p></div><span class="pill" style="background:#26332f;color:white;border:0">LOCAL PROJECT</span></div>
  <div class="two" style="margin-top:18px">
   <div><label for="allPhotos">전체 실습 사진 일괄 업로드</label><input id="allPhotos" type="file" accept="*/*" multiple><p class="hint">사진과 PDF·Word·PowerPoint·Excel·압축파일 등 여러 종류의 파일을 한 번에 선택할 수 있습니다. 이미지 파일은 사진 분류에 표시되고, 그 외 파일은 첨부파일 목록에 표시됩니다.</p></div>
-  <div><label for="aiEndpoint">AI 분류 서버 주소 (선택)</label><input id="aiEndpoint" placeholder="예: https://내-서버/api/classify"><p class="hint">실제 이미지 AI 분류를 사용하려면 호환 API 서버가 필요합니다. 주소가 없으면 파일명 기반 추천과 수동 확인 모드로 작동합니다.</p></div>
+  <div><label>사진 분류 방식</label><p class="hint">AI 연결 없이 파일명으로 공정을 임시 추천합니다. 사진을 직접 확인하고 올바른 공정으로 수정해 주세요. 파일명만으로 사진 속 실제 공정을 판별하지는 않습니다.</p></div>
  </div>
- <div style="display:flex;gap:9px;flex-wrap:wrap;margin:10px 0"><button type="button" class="ghost" id="classifyBtn">사진 자동 분류</button><button type="button" class="ghost" id="approveBtn">분류 결과 확인 완료</button><button type="button" class="ghost" id="clearPhotosBtn">사진 전체 삭제</button><span class="hint" id="classifyStatus" style="align-self:center">업로드된 사진이 없습니다.</span></div>
+ <div style="display:flex;gap:9px;flex-wrap:wrap;margin:10px 0"><button type="button" class="ghost" id="classifyBtn">파일명 기반 공정 추천</button><button type="button" class="ghost" id="approveBtn">분류 결과 확인 완료</button><button type="button" class="ghost" id="clearPhotosBtn">사진 전체 삭제</button><span class="hint" id="classifyStatus" style="align-self:center">업로드된 사진이 없습니다.</span></div>
  <div id="classificationGrid" class="uploads"></div>
  <div style="margin-top:14px"><strong style="font-size:13px">기타 첨부파일</strong><p class="hint">문서·PDF·프레젠테이션 등은 프로젝트 파일에 원본 그대로 포함됩니다.</p><div id="otherFileGrid" class="uploads"></div></div>
  <div class="hint" style="margin-top:10px">분류 항목: 재료 준비 · 믹싱 · 반죽 상태 · 1차 발효/접기 · 분할/벤치타임 · 충전 · 성형 · 2차 발효 · 굽기 전 마무리 · 굽기 · 완성품 · 관능평가 · 기타</div>
@@ -374,13 +374,12 @@ v5Input.addEventListener('change',async e=>{
  $('classifyStatus').textContent=`사진 ${v5Photos.length}장 · 기타 파일 ${v5Files.length}개 업로드됨`;
  e.target.value='';
 });
-$('classifyBtn').onclick=async()=>{if(!v5Photos.length){alert('먼저 실습 사진을 업로드해 주세요.');return}const endpoint=$('aiEndpoint').value.trim();if(endpoint){$('classifyStatus').textContent='AI 서버에 사진 분석 요청 중...';try{const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({images:v5Photos.map((p,index)=>({index,name:p.name,data:p.data})),categories:V5_CATEGORIES})});if(!res.ok)throw new Error('서버 응답 '+res.status);const out=await res.json();const rows=out.results||out;rows.forEach(r=>{if(v5Photos[r.index]){v5Photos[r.index].category=V5_CATEGORIES.includes(r.category)?r.category:'기타 / 미분류';v5Photos[r.index].confidence=Number.isFinite(r.confidence)?r.confidence:null;v5Photos[r.index].reason=r.reason||'AI 이미지 분석';v5Photos[r.index].confirmed=false}});v5Approved=false;v5Render();$('classifyStatus').textContent='AI 분류가 완료되었습니다. 각 사진의 공정을 확인해 주세요.';return}catch(err){alert('AI 서버 연결에 실패했습니다. 파일명 기반 추천으로 전환합니다.\n'+err.message)}}
-v5Photos.forEach(p=>{p.category=v5Guess(p.name);p.reason='파일명 기반 임시 추천 · 실제 이미지 인식 아님';p.confidence=null;p.confirmed=false});v5Approved=false;v5Render();$('classifyStatus').textContent='파일명 기반 추천 완료. 실제 AI 이미지 분석은 분류 서버 연결 후 사용할 수 있습니다.'};
+$('classifyBtn').onclick=()=>{if(!v5Photos.length){alert('먼저 실습 사진을 업로드해 주세요.');return}v5Photos.forEach(p=>{p.category=v5Guess(p.name);p.reason='파일명 기반 임시 추천 · 사진 내용은 직접 확인 필요';p.confidence=null;p.confirmed=false});v5Approved=false;v5Render();$('classifyStatus').textContent='파일명 기반 공정 추천 완료. 사진을 직접 확인하고 분류를 수정해 주세요.'};
 $('approveBtn').onclick=()=>{if(!v5Photos.length){alert('분류할 사진이 없습니다.');return}v5Photos.forEach(p=>p.confirmed=true);v5Approved=true;v5UpdateStatus();alert('분류 결과를 확인 완료로 표시했습니다. 확인한 공정이 맞는지 PPT 생성 전 다시 검토해 주세요.')};
 $('clearPhotosBtn').onclick=()=>{if(confirm('일괄 업로드 사진을 모두 삭제할까요?')){v5Photos=[];v5Files=[];v5Approved=false;v5Render();v5RenderFiles()}};
 // Extend the original v4.2 data model without removing its existing fields.
-const v4DataFn=data; data=function(){const d=v4DataFn();d.v5Photos=v5Photos;d.v5Files=v5Files;d.v5Approved=v5Approved;d.aiEndpoint=$('aiEndpoint').value.trim();return d};
-function v5Restore(d){if(d.aiEndpoint)$('aiEndpoint').value=d.aiEndpoint;v5Photos=Array.isArray(d.v5Photos)?d.v5Photos:[];v5Files=Array.isArray(d.v5Files)?d.v5Files:[];v5Approved=!!d.v5Approved;v5Render();v5RenderFiles();}
+const v4DataFn=data; data=function(){const d=v4DataFn();d.v5Photos=v5Photos;d.v5Files=v5Files;d.v5Approved=v5Approved;return d};
+function v5Restore(d){v5Photos=Array.isArray(d.v5Photos)?d.v5Photos:[];v5Files=Array.isArray(d.v5Files)?d.v5Files:[];v5Approved=!!d.v5Approved;v5Render();v5RenderFiles();}
 function v5ApplyProject(d){if(Array.isArray(d.ingredients))setIngredientItems(d.ingredients);Object.keys(d).forEach(k=>{if($(k)&&!['photos','allPhotos','projectFile'].includes(k))$(k).value=d[k]??''});if(Array.isArray(d.processStages)){$('processStages').innerHTML='';d.processStages.forEach(stage=>addProcessStage(stage))}if(d.attachments){Object.keys(partAttachments).forEach(k=>partAttachments[k]=d.attachments[k]||[]);renderPartAttachment('ingredients','ingredientPreview');renderPartAttachment('sensory','sensoryPreview');renderPartAttachment('discussion','discussionPreview')}['senseOrganization','senseCrumb','senseInnerColor','senseAroma','senseTaste','senseVolume','senseCrustColor','senseBalance','senseBaking','senseFracturability','discussion'].forEach(k=>{if($(k)&&d[k]!=null)$(k).value=d[k]});v5Restore(d);updateProfilePreview()}
 $('saveProject').onclick=async()=>{const d=data();if(!d.product&&!confirm('제품명이 비어 있습니다. 그래도 프로젝트를 저장할까요?'))return;try{if(typeof JSZip==='undefined')throw new Error('프로젝트 압축 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.');const zip=new JSZip();zip.file('project.json',JSON.stringify(d));zip.file('README.txt','O.BAKERY PROJECT 5.0 프로젝트 파일\n이 파일을 사이트의 프로젝트 불러오기로 열 수 있습니다.');const blob=await zip.generateAsync({type:'blob'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(d.product||'bakery_project').replace(/[\\/:*?"<>|]/g,'_')+'.obakery';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500)}catch(e){alert('프로젝트 저장 실패: '+e.message)}};
 $('loadProject').onclick=()=>$('projectFile').click();$('projectFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{let d;if(f.name.endsWith('.obakery')){if(typeof JSZip==='undefined')throw new Error('JSZip을 불러오지 못했습니다.');const z=await JSZip.loadAsync(f);const file=z.file('project.json');if(!file)throw new Error('project.json이 없습니다.');d=JSON.parse(await file.async('string'))}else d=JSON.parse(await f.text());v5ApplyProject(d);alert('프로젝트를 불러왔습니다.')}catch(err){alert('프로젝트를 열 수 없습니다: '+err.message)}e.target.value=''};
