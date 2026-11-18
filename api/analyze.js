@@ -1,4 +1,4 @@
-const ALLOWED_MODEL = 'gemini-2.5-flash-lite';
+const ALLOWED_MODEL = 'gemini-3.5-flash-lite';
 const MAX_IMAGES = 4;
 const MAX_IMAGE_BYTES = 750 * 1024;
 const MAX_TOTAL_BYTES = 3 * 1024 * 1024;
@@ -79,7 +79,7 @@ module.exports = async (req, res) => {
     const schema = isIngredients ? ingredientSchema : processSchema;
     const parts = [{ text: prompt }, ...imageParts];
     const model = process.env.GEMINI_MODEL || ALLOWED_MODEL;
-    if (model !== ALLOWED_MODEL) return send(res, 403, { error: '현재 버전은 무료 우선 모델만 허용합니다. GEMINI_MODEL 설정을 gemini-2.5-flash-lite로 유지해 주세요.' });
+    if (model !== ALLOWED_MODEL) return send(res, 403, { error: '현재 버전은 무료 우선 모델 gemini-3.5-flash-lite만 허용합니다. Vercel의 GEMINI_MODEL 환경 변수를 확인해 주세요.' });
 
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
     const upstream = await fetch(endpoint, {

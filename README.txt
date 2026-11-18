@@ -7,7 +7,7 @@ O.BAKERY PROJECT 6.0 — Gemini AI 사진 분석 버전
 - 구조화된 JSON 결과를 화면에서 직접 수정
 - 검토 후 승인한 항목만 기존 배합표/공정 기록에 반영
 - API Key는 Vercel 서버 환경변수에만 저장
-- 무료 우선 모델 gemini-2.5-flash-lite만 허용 (서버에서 다른 모델명 차단)
+- 무료 우선 모델 gemini-3.5-flash-lite만 허용 (서버에서 다른 모델명 차단)
 - 기존 OCR, 수동 입력, PPTX/PDF, .obakery 저장/불러오기 기능 유지
 
 중요: 이 ZIP만 GitHub Pages에 올리면 AI 분석은 작동하지 않습니다.
@@ -19,7 +19,7 @@ GitHub Pages는 정적 호스팅이므로 /api/analyze 서버 기능을 Vercel�
 3. 같은 프로젝트 파일 전체(api 폴더, package.json, vercel.json 포함)를 Vercel에 새 프로젝트로 가져옵니다.
 4. Vercel 프로젝트 Settings > Environment Variables에 다음 값을 추가합니다.
    GEMINI_API_KEY = Google AI Studio에서 발급한 API Key
-   GEMINI_MODEL = gemini-2.5-flash-lite
+   GEMINI_MODEL = gemini-3.5-flash-lite
 ALLOWED_ORIGIN = https://zich2007.github.io
 5. Vercel에 배포합니다.
 6. 배포된 Vercel 프로젝트의 Settings > Domains에서 기본 도메인을 확인합니다.
@@ -34,7 +34,7 @@ API 주소 관련 주의
 - Vercel과 GitHub Pages는 별도로 배포할 수 있습니다. 기존 GitHub Pages 주소를 계속 사용할 수 있습니다.
 
 무료 및 개인정보 안내
-- 기본 모델은 gemini-2.5-flash-lite이며 현재 공식 가격표에서 무료 등급 입력/출력이 무료로 표시됩니다. 무료 한도와 모델 제공 여부는 Google 정책에 따라 달라질 수 있습니다.
+- 기본 모델은 gemini-3.5-flash-lite이며 현재 공식 가격표에서 무료 등급 입력/출력이 무료로 표시됩니다. 무료 한도와 모델 제공 여부는 Google 정책에 따라 달라질 수 있습니다.
 - 무료 등급은 제출한 콘텐츠가 Google 제품 개선에 사용될 수 있습니다. 따라서 사진 전송 전에 동의를 받도록 UI에 안내를 넣었습니다.
 - 무료 한도 초과 시 유료 모델로 자동 전환하지 않습니다.
 - API Key를 index.html, GitHub 저장소, .obakery 파일에 입력하지 마세요.
