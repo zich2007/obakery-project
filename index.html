@@ -376,8 +376,11 @@ function makePdfHtml(d){
  .meta{color:#68746d;font-size:10pt}.stage{break-inside:avoid;page-break-inside:avoid;border:1px solid #e7e4db;border-radius:8px;padding:5mm;margin:4mm 0}
  /* PDF 페이지 분할 시 제목만 페이지 끝에 남거나 표의 첫 줄이 잘리는 현상 방지 */
  h1,h2,h3{break-inside:avoid;page-break-inside:avoid}
- h2{break-after:avoid-page;page-break-after:avoid;margin-top:9mm}
- h2+p,h2+table,h2+.stage{break-before:avoid-page;page-break-before:avoid}
+ /* html2pdf는 브라우저 인쇄 CSS의 페이지 분할을 완전히 따르지 않으므로
+    주요 섹션은 새 페이지에서 시작시켜 제목이 페이지 끝에서 잘리지 않게 한다. */
+ h2{break-before:page;page-break-before:always;break-after:avoid;page-break-after:avoid;margin-top:0;padding-top:2mm}
+ .cover+h2{break-before:auto;page-break-before:auto}
+ h2+p,h2+table,h2+.stage{break-before:avoid;page-break-before:avoid}
  table{width:100%;border-collapse:collapse;font-size:10pt;break-inside:auto;page-break-inside:auto}
  thead{display:table-header-group}tfoot{display:table-footer-group}
  tr,th,td{break-inside:avoid;page-break-inside:avoid}
@@ -403,7 +406,7 @@ $('exportPdf').onclick=()=>{
  let html=makePdfHtml(d).replace(/<script>[\s\S]*?<\/script>/,'');
  w.document.open();w.document.write(html);w.document.close();
  const script=w.document.createElement('script');script.src='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
- script.onload=async()=>{try{const images=[...w.document.images];await Promise.all(images.map(im=>im.decode?im.decode().catch(()=>{}):Promise.resolve()));await w.html2pdf().set({margin:[12,12,14,12],filename:(d.product||'obakery_assignment').replace(/[\\/:*?"<>|]/g,'_')+'_OBAKERY.pdf',image:{type:'jpeg',quality:.96},html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff',scrollY:0},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},pagebreak:{mode:['css','legacy'],avoid:['h1','h2','h3','tr','figure','.stage','.ingredient-photos']}}).from(w.document.body).save();}catch(err){alert('PDF 파일 생성에 실패했습니다. 인쇄 기능으로 저장을 시도해 주세요.');w.print();}};
+ script.onload=async()=>{try{const images=[...w.document.images];await Promise.all(images.map(im=>im.decode?im.decode().catch(()=>{}):Promise.resolve()));await w.html2pdf().set({margin:[12,12,14,12],filename:(d.product||'obakery_assignment').replace(/[\\/:*?"<>|]/g,'_')+'_OBAKERY.pdf',image:{type:'jpeg',quality:.96},html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff',scrollY:0},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},pagebreak:{mode:['css','legacy'],before:['h2'],avoid:['h1','h2','h3','tr','figure','.stage','.ingredient-photos']}}).from(w.document.body).save();}catch(err){alert('PDF 파일 생성에 실패했습니다. 인쇄 기능으로 저장을 시도해 주세요.');w.print();}};
  script.onerror=()=>{alert('PDF 생성 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.');w.print();};w.document.head.appendChild(script);
 };
 
