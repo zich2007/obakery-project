@@ -121,7 +121,7 @@ module.exports = async (req, res) => {
     const schema = isIngredients ? ingredientSchema : isProcess ? processSchema : isPhotoMatch ? photoMatchSchema : isPhotoClassify ? photoClassifySchema : processRecordSchema;
     const parts = [{ text: prompt }, ...imageParts];
     const model = process.env.GEMINI_MODEL || ALLOWED_MODEL;
-    if (model !== ALLOWED_MODEL) return send(res, 403, { error: '현재 버전은 무료 우선 모델 gemini-3.5-flash-lite만 허용합니다. Vercel의 GEMINI_MODEL 환경 변수를 확인해 주세요.' });
+    if (model !== ALLOWED_MODEL) return send(res, 403, { error: '현재 버전에서 허용하지 않는 모델입니다. Vercel의 GEMINI_MODEL 환경 변수를 확인해 주세요.' });
 
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
     const upstream = await fetch(endpoint, {
@@ -135,9 +135,9 @@ module.exports = async (req, res) => {
     });
     const result = await upstream.json().catch(() => ({}));
     if (!upstream.ok) {
-      const message = result?.error?.message || 'Gemini API 요청에 실패했습니다.';
+      const message = result?.error?.message || 'Gemini API 요청에 실패했습니다. 잠시 후 다시 시도해 주세요.';
       const status = upstream.status === 429 ? 429 : upstream.status === 400 ? 400 : [408,500,502,503,504].includes(upstream.status) ? upstream.status : 502;
-      return send(res, status, { error: upstream.status === 429 ? 'Gemini 무료 사용 한도 또는 요청 제한에 도달했습니다. 잠시 후 다시 시도하거나 기존 OCR을 이용해 주세요.' : message, retryable: [408,429,500,502,503,504].includes(status) });
+      return send(res, status, { error: upstream.status === 503 ? 'Gemini 모델에 일시적으로 요청이 집중되고 있습니다. 잠시 기다린 뒤 자동 재시도하거나 다시 시도해 주세요.' : upstream.status === 429 ? 'Gemini 무료 사용 한도 또는 요청 제한에 도달했습니다. 잠시 후 다시 시도해 주세요.' : message, retryable: [408,429,500,502,503,504].includes(status) });
     }
     const text = result?.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('');
     if (!text) return send(res, 502, { error: 'AI 응답에 분석 결과가 없습니다. 사진을 다시 촬영해 시도해 주세요.' });

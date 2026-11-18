@@ -97,11 +97,11 @@ body[data-theme="dark"] footer{color:var(--muted)}
 @media(max-width:600px){.top-actions{gap:7px}.theme-toggle{padding:7px 10px}}
 
 
-.ocr-panel{background:var(--paper);border-style:solid}.ocr-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.ocr-actions button{width:auto;margin:0;padding:10px 13px;font-size:12px}.ocr-apply{background:#e7eee7;color:#34463b}.ocr-result{min-height:150px;font-size:13px;white-space:pre-wrap}.ocr-status{margin-top:9px}
-body[data-theme="dark"] .ocr-panel{background:#1b231f;border-color:var(--line)}body[data-theme="dark"] .ocr-apply{background:#39463e;color:#e8ece8}
 
-.ocr-check{display:flex;align-items:center;gap:8px;margin:10px 0;color:var(--muted);font-size:12px}
-.ocr-check input{width:auto;margin:0}
+
+
+
+
 
 .photo-ai-workflow{margin-top:16px;padding:15px;border:1px solid var(--line);border-radius:13px;background:var(--paper)}
 .photo-ai-workflow h3{margin:0 0 7px;font-size:16px}
@@ -130,11 +130,11 @@ body[data-theme="dark"] .ocr-panel{background:#1b231f;border-color:var(--line)}b
 </style>
 </head>
 <body>
-<header><div class="top"><div class="brand">O.BAKERY PROJECT</div><div class="top-actions"><button type="button" class="theme-toggle" id="themeToggle" aria-pressed="false">🌙 다크모드</button><div class="pill">MY ASSIGNMENT STUDIO · VERSION 6.1</div></div></div>
+<header><div class="top"><div class="brand">O.BAKERY PROJECT</div><div class="top-actions"><button type="button" class="theme-toggle" id="themeToggle" aria-pressed="false">🌙 다크모드</button><div class="pill">MY ASSIGNMENT STUDIO · VERSION 6.3</div></div></div>
 <div class="hero"><div><div class="eyebrow">BAKERY · PASTRY · PRACTICE</div><h1>실습 기록을 정리하고<br>과제 PPT 완성하기</h1><p>실습 사진 정리부터 재료 배합표 작성, 프로젝트 파일 저장까지<br>제과·제빵 실습 과제 제작을 한 곳에서 진행하세요.</p></div><button type="button" class="hero-art" id="breadEmoji" aria-label="빵 이모지 바꾸기" title="터치해서 다른 빵으로 바꿔보세요">🥐</button></div></header>
 <main>
 <div class="panel" id="v5Workspace" style="border:1px solid #d8c7b2;background:linear-gradient(135deg,#fffefa,#f4eee5)">
- <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap"><div><div class="eyebrow" style="color:#9b7652">VERSION 6.2 · AI STABILITY WORKFLOW</div><h2 style="font-size:22px;margin:7px 0">프로젝트 관리</h2><p class="sub" style="margin:0">AI 사진 분류와 제조공정 기록을 포함한 실습 프로젝트를 관리합니다.</p></div><span class="pill" style="background:#26332f;color:white;border:0">LOCAL PROJECT</span></div>
+ <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap"><div><div class="eyebrow" style="color:#9b7652">VERSION 6.3 · AI RELIABILITY WORKFLOW</div><h2 style="font-size:22px;margin:7px 0">프로젝트 관리</h2><p class="sub" style="margin:0">공정 순서 정리와 공정별 사진 추천을 하나의 흐름으로 관리합니다.</p></div><span class="pill" style="background:#26332f;color:white;border:0">LOCAL PROJECT</span></div>
  <div style="margin-top:22px;min-height:150px;display:flex;align-items:center;justify-content:center;border:1px dashed #d8c7b2;border-radius:14px;background:rgba(255,255,255,.55)">
   <div style="font-size:20px;font-weight:800;letter-spacing:.04em;color:#9b7652">🥐 O.BAKERY · PRACTICE WORKSPACE</div>
  </div>
@@ -163,14 +163,6 @@ body[data-theme="dark"] .ocr-panel{background:#1b231f;border-color:var(--line)}b
  <div class="ai-status" id="ingredientAiStatus">사진을 선택하고 전송 동의 후 분석하세요.</div>
  <label for="ingredientAiResult">AI 분석 결과 (JSON · 직접 수정 가능)</label><textarea id="ingredientAiResult" class="ai-review" placeholder="분석 결과가 여기에 표시됩니다."></textarea>
  <div class="ai-warning">AI가 읽지 못한 숫자나 재료는 임의로 추정하지 않습니다. 중량이 불명확한 항목은 빈 값으로 표시될 수 있으니 원본 사진과 대조하세요.</div>
-</div>
-<div class="part-upload ocr-panel" id="ingredientOcrPanel">
- <strong>재료표 사진 글자 인식 (OCR)</strong>
- <span class="hint">사진을 확대·보정한 뒤 여러 방식으로 인식하고, 결과 중 신뢰도가 높은 내용을 선택합니다. 결과를 확인하고 수정한 뒤 배합표에 반영하세요.</span><label class="ocr-check"><input type="checkbox" id="ingredientOcrMulti" checked> 사진 보정 및 다중 인식 사용</label>
- <input id="ingredientOcrFile" type="file" accept="image/*" multiple>
- <div class="ocr-actions"><button type="button" class="ghost" id="runIngredientOcr">재료표 글자 인식</button><button type="button" class="secondary ocr-apply" id="applyIngredientOcr" disabled>인식한 재료를 배합표에 추가</button></div>
- <div class="hint ocr-status" id="ingredientOcrStatus">아직 인식한 사진이 없습니다.</div>
- <label for="ingredientOcrText">인식 결과 (직접 수정 가능)</label><textarea id="ingredientOcrText" class="ocr-result" placeholder="인식 결과가 여기에 표시됩니다."></textarea>
 </div>
 <div class="part-upload" id="recipeEditor">
 <strong>재료 계량 · 배합표 작성</strong>
@@ -230,16 +222,6 @@ body[data-theme="dark"] .ocr-panel{background:#1b231f;border-color:var(--line)}b
 <div id="processStages" class="process-stages"></div>
 <button type="button" class="secondary" id="addProcessStage">+ 제조 공정 추가</button>
 
-<div class="part-upload ocr-panel" id="processOcrPanel">
- <strong>제조공정 사진 글자 인식 (OCR)</strong>
- <span class="hint">공정표·실습 지시서 사진을 확대·보정하고 여러 방식으로 인식해 공정 기록 초안으로 정리합니다.</span><label class="ocr-check"><input type="checkbox" id="processOcrMulti" checked> 사진 보정 및 다중 인식 사용</label>
- <input id="processOcrFile" type="file" accept="image/*" multiple>
- <div class="ocr-actions"><button type="button" class="ghost" id="runProcessOcr">제조공정 글자 인식</button><button type="button" class="secondary ocr-apply" id="applyProcessOcr" disabled>인식한 내용을 공정 기록에 추가</button></div>
- <div class="hint ocr-status" id="processOcrStatus">아직 인식한 사진이 없습니다.</div>
- <label for="processOcrText">인식 결과 (직접 수정 가능)</label><textarea id="processOcrText" class="ocr-result" placeholder="인식 결과가 여기에 표시됩니다."></textarea>
-</div>
-<p class="hint" style="margin-top:10px">작성 팁: 무엇을 했는지 → 어떤 상태였는지 → 온도·시간 등 조건은 어땠는지 → 주의할 점은 무엇인지 순서로 작성하면 좋아요.</p>
-</div>
 <div class="panel"><h2><span class="step">05</span>관능평가</h2><p class="sub">아래 항목을 참고해 제품을 직접 관찰하고 맛본 결과를 서술형으로 작성하세요. 예시는 작성 방향을 돕기 위한 문장이므로 제품에 맞게 수정하면 됩니다.</p>
 <h3 style="font-size:15px;margin:20px 0 8px;color:var(--accent)">내부 평가</h3><p class="hint">제품을 잘라 내부의 조직과 상태를 확인하고 평가합니다.</p>
 <div class="two">
@@ -723,112 +705,6 @@ const oldExportHandler=$('export').onclick;$('export').onclick=async()=>{if(v5Ph
 })();
 
 
-// OCR 개선 엔진: Tesseract.js 5 + 브라우저 Canvas 전처리 + 다중 패스
-let tesseractLoaderPromise=null;
-async function ensureTesseract(){
- if(window.Tesseract)return window.Tesseract;
- if(!tesseractLoaderPromise)tesseractLoaderPromise=new Promise((resolve,reject)=>{
-  const urls=['https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js','https://unpkg.com/tesseract.js@5/dist/tesseract.min.js'];let i=0;
-  const next=()=>{if(i>=urls.length){reject(new Error('Tesseract.js를 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.'));return}
-   const sc=document.createElement('script');sc.src=urls[i++];sc.async=true;sc.onload=()=>window.Tesseract?resolve(window.Tesseract):next();sc.onerror=()=>{sc.remove();next()};document.head.appendChild(sc)};
-  next();
- }).catch(e=>{tesseractLoaderPromise=null;throw e});
- return tesseractLoaderPromise;
-}
-function loadImageForOcr(file){
- return new Promise((resolve,reject)=>{const url=URL.createObjectURL(file),img=new Image();img.onload=()=>{URL.revokeObjectURL(url);resolve(img)};img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('사진을 열 수 없습니다: '+file.name))};img.src=url});
-}
-async function makeOcrVariants(file){
- const img=await loadImageForOcr(file);
- const maxWidth=2600,scale=Math.min(2.5,Math.max(1.5,maxWidth/img.naturalWidth));
- const w=Math.round(img.naturalWidth*scale),h=Math.round(img.naturalHeight*scale);
- const base=document.createElement('canvas');base.width=w;base.height=h;
- const bctx=base.getContext('2d',{willReadFrequently:true});bctx.fillStyle='#fff';bctx.fillRect(0,0,w,h);bctx.drawImage(img,0,0,w,h);
- const source=bctx.getImageData(0,0,w,h),gray=new Uint8ClampedArray(source.data.length);
- let sum=0,count=0;
- for(let i=0;i<source.data.length;i+=4){const v=.299*source.data[i]+.587*source.data[i+1]+.114*source.data[i+2];gray[i]=gray[i+1]=gray[i+2]=v;gray[i+3]=255;if(v<245){sum+=v;count++}}
- const mean=count?sum/count:180,threshold=Math.max(105,Math.min(205,mean*.78));
- const enhanced=document.createElement('canvas');enhanced.width=w;enhanced.height=h;
- const ectx=enhanced.getContext('2d');const ed=ectx.createImageData(w,h);
- const binary=document.createElement('canvas');binary.width=w;binary.height=h;
- const tctx=binary.getContext('2d');const td=tctx.createImageData(w,h);
- for(let i=0;i<gray.length;i+=4){
-  const v=gray[i],contrast=Math.max(0,Math.min(255,(v-128)*1.35+128));
-  ed.data[i]=ed.data[i+1]=ed.data[i+2]=contrast;ed.data[i+3]=255;
-  const bw=v<threshold?0:255;td.data[i]=td.data[i+1]=td.data[i+2]=bw;td.data[i+3]=255;
- }
- ectx.putImageData(ed,0,0);tctx.putImageData(td,0,0);
- return [{label:'확대 원본',canvas:base},{label:'명암 보정',canvas:enhanced},{label:'흑백 보정',canvas:binary}];
-}
-async function runOcrForFiles(inputId,textId,statusId,buttonId,multiId){
- const files=Array.from($(inputId).files||[]).filter(f=>f.type.startsWith('image/'));if(!files.length){alert('먼저 인식할 사진을 선택해 주세요.');return false}
- const button=$(buttonId),status=$(statusId);button.disabled=true;status.textContent='OCR 엔진 준비 중...';
- try{
-  const T=await ensureTesseract();
-  const worker=await T.createWorker('kor+eng',1,{logger:m=>{if(m.status==='recognizing text')status.textContent='글자 인식 중... '+Math.round((m.progress||0)*100)+'%'}});
-  try{
-   const outputs=[],useMulti=$(multiId)?.checked!==false;
-   for(let fi=0;fi<files.length;fi++){
-    status.textContent=`사진 ${fi+1}/${files.length}: 이미지 보정 중...`;
-    const variants=useMulti?await makeOcrVariants(files[fi]):[{label:'원본',canvas:files[fi]}];
-    const candidates=[];
-    for(let vi=0;vi<variants.length;vi++){
-     status.textContent=`사진 ${fi+1}/${files.length}: ${variants[vi].label} 인식 (${vi+1}/${variants.length})`;
-     const psm=(inputId==='ingredientOcrFile'?'6':'11');
-     if(worker.setParameters)await worker.setParameters({tessedit_pageseg_mode:psm,preserve_interword_spaces:'1'});
-     const r=await worker.recognize(variants[vi].canvas);
-     candidates.push({text:(r.data&&r.data.text)||'',confidence:Number(r.data&&r.data.confidence)||0,label:variants[vi].label});
-    }
-    candidates.sort((a,b)=>b.confidence-a.confidence);
-    const best=candidates[0]||{text:'',confidence:0,label:'인식 결과 없음'};
-    const header=`【${files[fi].name} · 선택 결과: ${best.label} · 신뢰도 ${best.confidence.toFixed(0)}】`;
-    outputs.push(header+'\n'+best.text);
-    if(useMulti&&candidates.length>1){
-     outputs.push('【다른 인식 결과 참고】\n'+candidates.slice(1).map(c=>`[${c.label} / ${c.confidence.toFixed(0)}점]\n${c.text}`).join('\n\n'));
-    }
-   }
-   $(textId).value=outputs.join('\n\n');
-   status.textContent=`인식 완료: ${files.length}장. 보정·다중 인식 결과를 검토하고 수정한 뒤 반영하세요.`;
-   return true;
-  }finally{await worker.terminate()}
- }catch(e){status.textContent='인식 실패: '+(e.message||e);alert('글자 인식 실패: '+(e.message||e));return false}
- finally{button.disabled=false}
-}
-function parseIngredientOcr(text){
- const result=[],seen=new Set(),skip=/^(재료|원료|사용량|중량|배합표|재료명|구분|합계|총량|비고|수량|단위|선택 결과|다른 인식 결과)/i;
- for(const raw of String(text||'').split(/\r?\n/)){
-  let line=raw.replace(/[|｜]/g,' ').replace(/\s+/g,' ').trim();
-  if(!line||skip.test(line)||/^【/.test(line)||/^\[.*점\]$/.test(line))continue;
-  let name='',amount=NaN,unit='g',m=line.match(/^(.+?)\s*[:：=]?\s*(\d+(?:[.,]\d+)?)\s*(kg|g|그램)?$/i);
-  if(m){name=m[1];amount=parseFloat(m[2].replace(',','.'));unit=m[3]||'g'}
-  else if((m=line.match(/^(\d+(?:[.,]\d+)?)\s*(kg|g|그램)\s+(.+)$/i))){amount=parseFloat(m[1].replace(',','.'));unit=m[2];name=m[3]}
-  else{
-   const parts=line.split(/\s{2,}|\t/).map(x=>x.trim()).filter(Boolean);
-   if(parts.length>1){const q=parts.find(x=>/^\d+(?:[.,]\d+)?\s*(kg|g)?$/i.test(x));if(q){name=parts.filter(x=>x!==q).join(' ');amount=parseFloat(q.replace(/[^\d.,]/g,'').replace(',','.'));unit=/kg/i.test(q)?'kg':'g'}}
-  }
-  name=name.replace(/^[\d.)、]+\s*/,'').replace(/[•·:：]+$/,'').trim();
-  if(!name||!Number.isFinite(amount)||amount<0||name.length>50)continue;
-  if(/^kg$/i.test(unit))amount*=1000;
-  const kind=/밀가루|강력분|중력분|박력분|소프트\s*t|강력|중력|박력|flour/i.test(name)?'flour':'other';
-  const key=name.toLowerCase()+'|'+amount;if(!seen.has(key)){seen.add(key);result.push({kind,name,grams:amount})}
- }
- return result;
-}
-$('runIngredientOcr').addEventListener('click',async()=>{$('applyIngredientOcr').disabled=!(await runOcrForFiles('ingredientOcrFile','ingredientOcrText','ingredientOcrStatus','runIngredientOcr','ingredientOcrMulti'))});
-$('applyIngredientOcr').addEventListener('click',()=>{const items=parseIngredientOcr($('ingredientOcrText').value);if(!items.length){alert('재료명과 중량을 함께 인식한 항목이 없습니다. 인식 결과를 확인해 주세요.');return}setIngredientItems(getIngredientItems().filter(x=>x.name||x.grams).concat(items));alert(items.length+'개 재료 초안을 추가했습니다. 밀가루 구분과 중량을 확인해 주세요.')});
-$('runProcessOcr').addEventListener('click',async()=>{$('applyProcessOcr').disabled=!(await runOcrForFiles('processOcrFile','processOcrText','processOcrStatus','runProcessOcr','processOcrMulti'))});
-function parseProcessOcr(text){
- const lines=String(text||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean),out=[];let cur=null;
- const head=/^(?:\d+[\.)、]\s*)?(재료\s*계량|계량|믹싱|반죽|혼합|1차\s*발효|중간\s*발효|발효|분할|둥글리기|벤치\s*타임|휴지|성형|충전|2차\s*발효|굽기|오븐|냉각|마무리|포장|제조\s*공정|공정\s*\d+)/i;
- for(let line of lines){line=line.replace(/^【.*?】/,'').trim();if(!line||/^\[.*점\]$/.test(line)||/^다른 인식 결과/.test(line))continue;
-  if(head.test(line)){if(cur)out.push(cur);cur={title:line.replace(/^[\d.)、]+\s*/,''),detail:[],temperature:'',time:'',point:''}}
-  else{if(!cur)cur={title:'인식된 제조공정',detail:[],temperature:'',time:'',point:''};if(/온도|℃|°c|도\b/i.test(line))cur.temperature+=(cur.temperature?' / ':'')+line;else if(/분\b|시간|초\b|hour|min\b/i.test(line))cur.time+=(cur.time?' / ':'')+line;else cur.detail.push(line)}
- }
- if(cur)out.push(cur);return out.map(x=>({...x,detail:x.detail.join('\n')})).filter(x=>x.title||x.detail||x.temperature||x.time)
-}
-$('applyProcessOcr').addEventListener('click',()=>{const stages=parseProcessOcr($('processOcrText').value);if(!stages.length){alert('공정 내용을 찾지 못했습니다. 인식 결과를 확인해 주세요.');return}stages.forEach(x=>addProcessStage(x));alert(stages.length+'개 공정 초안을 추가했습니다. 내용을 확인해 주세요.')});
-
-
 // O.BAKERY 6.0 — Gemini AI image analysis. API key remains on the Vercel server.
 const AI_MAX_FILES=4, AI_MAX_BYTES=25*1024*1024;
 const AI_API_STORAGE_KEY='obakery_gemini_api_url';
@@ -846,6 +722,28 @@ async function aiReadFile(file){
   return {mimeType:'image/jpeg',data,name:file.name};
  }finally{URL.revokeObjectURL(url);}
 }
+const AI_RETRY_DELAYS=[5000,15000,30000];
+async function fetchAiWithRetry(url,options,statusId){
+ let lastError;
+ for(let attempt=0;attempt<=AI_RETRY_DELAYS.length;attempt++){
+  try{
+   const response=await fetch(url,options);
+   if(response.ok)return response;
+   const payload=await response.json().catch(()=>({error:'서버 응답을 해석하지 못했습니다.'}));
+   const error=new Error(payload.error||('요청 실패 (HTTP '+response.status+')'));error.status=response.status;
+   if(![408,429,500,502,503,504].includes(response.status)||attempt>=AI_RETRY_DELAYS.length)throw error;
+   lastError=error;
+  }catch(error){
+   lastError=error;
+   if(error.status&&!([408,429,500,502,503,504].includes(error.status)))throw error;
+   if(attempt>=AI_RETRY_DELAYS.length)throw error;
+  }
+  const delay=AI_RETRY_DELAYS[attempt];
+  aiSetStatus(statusId,`Gemini 서버가 혼잡합니다. ${delay/1000}초 후 재시도합니다. (${attempt+1}/${AI_RETRY_DELAYS.length})`);
+  await new Promise(resolve=>setTimeout(resolve,delay));
+ }
+ throw lastError||new Error('AI 요청에 실패했습니다.');
+}
 async function runGeminiAnalysis(type){
  const isIng=type==='ingredients',fileId=isIng?'ingredientAiFile':'processAiFile',consentId=isIng?'ingredientAiConsent':'processAiConsent',statusId=isIng?'ingredientAiStatus':'processAiStatus',resultId=isIng?'ingredientAiResult':'processAiResult',buttonId=isIng?'runIngredientAi':'runProcessAi',applyId=isIng?'applyIngredientAi':'applyProcessAi';
  const files=Array.from($(fileId).files||[]);$(applyId).disabled=true;
@@ -857,13 +755,12 @@ async function runGeminiAnalysis(type){
  const btn=$(buttonId);btn.disabled=true;aiSetStatus(statusId,'사진을 준비하고 AI에 분석을 요청하고 있습니다…');
  try{
   const images=await Promise.all(files.map(aiReadFile));
-  const response=await fetch(getAiApiUrl(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type,images,consent:true})});
+  const response=await fetchAiWithRetry(getAiApiUrl(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type,images,consent:true})},statusId);
   const payload=await response.json().catch(()=>({error:'서버 응답을 해석하지 못했습니다.'}));
-  if(!response.ok)throw new Error(payload.error||('요청 실패 (HTTP '+response.status+')'));
   const data=payload.result||{};$(resultId).value=JSON.stringify(data,null,2);$(applyId).disabled=false;
   const count=isIng?(data.ingredients||[]).length:(data.stages||[]).length;
   aiSetStatus(statusId,'분석 완료: '+count+'개 항목을 추출했습니다. 반드시 원본 사진과 대조한 뒤 반영하세요.');
- }catch(err){aiSetStatus(statusId,'분석 실패: '+err.message);alert('AI 분석에 실패했습니다.\n'+err.message+'\n\n무료 사용 한도 또는 API 설정을 확인하거나 기존 OCR/수동 입력을 이용해 주세요.');}
+ }catch(err){aiSetStatus(statusId,'분석 실패: '+err.message);alert('AI 분석에 실패했습니다.\n'+err.message+'\n\n무료 사용 한도 또는 API 설정을 확인하거나 잠시 후 다시 시도해 주세요. 사진을 줄이거나 수동으로 입력할 수도 있습니다.');}
  finally{btn.disabled=false;}
 }
 function parseAiJson(id){try{return JSON.parse($(id).value)}catch(e){throw new Error('JSON 형식이 올바르지 않습니다. 괄호와 쉼표를 확인해 주세요.');}}
@@ -904,7 +801,7 @@ function renderPhotoDrafts(items,containerId,kind){
  });
 }
 // 6.2 안정화: 사진은 1장씩 순차 전송하고, 일시 오류만 최대 3회 재시도합니다.
-const PHOTO_RETRY_DELAYS=[2000,5000,10000];
+const PHOTO_RETRY_DELAYS=[5000,15000,30000];
 let classifyQueue=[];
 let classifyBusy=false;
 function isRetryablePhotoError(error){
