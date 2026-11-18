@@ -771,15 +771,17 @@ $('applyProcessAi').addEventListener('click',()=>{try{const data=parseAiJson('pr
 // ===== O.BAKERY PROJECT 6.1 · Multi-photo classification + process photo records =====
 let photoClassifyDrafts=[];
 function photoEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+// 기본 제빵 공정: 사진이 일부 단계만 보여도 전체 기본 공정 틀을 유지하고,
+ // 사진은 해당 단계에만 연결합니다. 시간·온도 등 제품별 조건은 임의 생성하지 않습니다.
 const PHOTO_STAGE_TEMPLATES=[
- {key:'prepare',title:'재료 준비 및 계량',type:'both'},
- {key:'mix',title:'반죽 제조 및 상태 확인',type:'both'},
- {key:'ferment',title:'발효 및 반죽 휴지',type:'bread'},
- {key:'divide',title:'분할·둥글리기 및 중간 휴지',type:'bread'},
- {key:'shape',title:'성형 및 팬닝',type:'both'},
- {key:'fillfinish',title:'충전·토핑 및 굽기 전 마무리',type:'both'},
- {key:'bakecool',title:'굽기 및 냉각',type:'both'},
- {key:'decorate',title:'장식 및 최종 마무리',type:'both'}
+ {key:'prepare',title:'재료 준비 및 계량',type:'bread',detail:'사용할 재료를 확인하고 각 재료를 정해진 중량에 맞게 계량한다. 가루 재료는 필요에 따라 체에 내려 준비한다.'},
+ {key:'mix',title:'반죽 제조 및 믹싱',type:'bread',detail:'계량한 재료를 배합하여 반죽하고, 반죽의 탄력과 글루텐 형성 상태를 확인한다.'},
+ {key:'firstferment',title:'1차 발효',type:'bread',detail:'반죽을 발효시켜 부피와 상태 변화를 확인한다.'},
+ {key:'divide',title:'분할·둥글리기 및 중간 휴지',type:'bread',detail:'반죽을 정해진 크기로 분할하고 둥글린 뒤, 성형하기 알맞은 상태가 되도록 중간 휴지한다.'},
+ {key:'shape',title:'성형 및 팬닝',type:'bread',detail:'반죽을 제품 형태에 맞게 성형하고 팬 또는 틀에 배치한다.'},
+ {key:'secondferment',title:'2차 발효',type:'bread',detail:'성형한 반죽을 발효시켜 굽기 전 적절한 부피와 상태로 만든다.'},
+ {key:'bake',title:'굽기',type:'bread',detail:'예열된 오븐에서 제품을 굽고 색과 내부 익힘 상태를 확인한다.'},
+ {key:'coolfinish',title:'냉각 및 마무리',type:'bread',detail:'구워진 제품을 냉각하고 필요에 따라 마무리 작업을 진행한다.'}
 ];
 function renderPhotoDrafts(items,containerId,kind){
  const root=$(containerId);root.innerHTML='';
@@ -793,8 +795,8 @@ function renderPhotoDrafts(items,containerId,kind){
    const lab=document.createElement('label');lab.textContent='추천 제조공정 (직접 변경 가능)';
    const sel=document.createElement('select');
    const none=document.createElement('option');none.value='-1';none.textContent='기타 / 미분류';sel.appendChild(none);
-   PHOTO_STAGE_TEMPLATES.forEach((stage,i)=>{const op=document.createElement('option');op.value=String(i);op.textContent=stage.title;sel.appendChild(op)});
-   sel.value=Number.isInteger(item.stageIndex)&&item.stageIndex>=0&&item.stageIndex<PHOTO_STAGE_TEMPLATES.length?String(item.stageIndex):'-1';
+   activePhotoStages.forEach((stage,i)=>{const op=document.createElement('option');op.value=String(i);op.textContent=stage.title;sel.appendChild(op)});
+   sel.value=Number.isInteger(item.stageIndex)&&item.stageIndex>=0&&item.stageIndex<activePhotoStages.length?String(item.stageIndex):'-1';
    sel.addEventListener('change',()=>{item.stageIndex=Number(sel.value);item.userChanged=true;});
    const desc=document.createElement('div');desc.className='hint';desc.textContent=(item.description||'사진 설명 없음')+' · 신뢰도 '+Math.round((item.confidence||0)*100)+'%';
    const why=document.createElement('div');why.className='hint';why.textContent=item.reason||'';
@@ -812,6 +814,7 @@ function renderPhotoDrafts(items,containerId,kind){
 const PHOTO_RETRY_DELAYS=[5000,15000,30000];
 let classifyQueue=[];
 let classifyBusy=false;
+let activePhotoStages=[]; // 사진 추천 시작 시점의 실제 제조공정 목록 스냅샷
 function isRetryablePhotoError(error){
  const status=Number(error?.status||0);
  return !status || [408,429,500,502,503,504].includes(status);
@@ -845,6 +848,13 @@ function refreshPhotoDraftViews(){
  renderPhotoDrafts(photoClassifyDrafts,'photoClassificationResults','classify');
  updatePhotoRetryButtons();
 }
+function readCurrentPhotoStages(){
+ return Array.from(document.querySelectorAll('#processStages .process-stage')).map((card,index)=>({
+  index,
+  title:card.querySelector('.stage-title')?.value.trim()||('공정 '+(index+1)),
+  detail:card.querySelector('.stage-detail')?.value.trim()||''
+ }));
+}
 async function processPhotoQueue(kind,onlyFailed=false){
  const queue=classifyQueue;
  if(classifyBusy)return;
@@ -858,7 +868,7 @@ async function processPhotoQueue(kind,onlyFailed=false){
   const progress=queue.filter(x=>x.status==='success').length;
   aiSetStatus('classifyPhotoStatus',`사진별 공정 추천 중 · ${progress+1}/${queue.length}장 (사진 1장씩 처리)`);
   try{
-   const stages=PHOTO_STAGE_TEMPLATES.map((stage,index)=>({index,title:stage.title,detail:'기본 제과·제빵 공정 분류'}));
+   const stages=activePhotoStages;
    const {image,result}=await sendOnePhotoWithRetry('photo-match',item.file,(attempt,delay)=>{
     aiSetStatus('classifyPhotoStatus',`${item.file.name}: 일시 오류 감지 · ${attempt}차 재시도 대기 중 (${delay/1000}초)`);
    },stages);
@@ -885,7 +895,8 @@ function validatePhotoFiles(files){
  return true;
 }
 $('runPhotoClassification').addEventListener('click',async()=>{
- if(!PHOTO_STAGE_TEMPLATES.length){alert('공정 분류 기준을 불러오지 못했습니다.');return;}
+ activePhotoStages=readCurrentPhotoStages();
+ if(!activePhotoStages.length){alert('먼저 제조공정 순서를 등록하고 적용해 주세요. 사진 추천은 현재 등록된 공정에만 연결합니다.');return;}
  const files=Array.from($('classifyPhotoFiles').files||[]);
  if(!$('classifyPhotoConsent').checked){alert('사진을 Gemini로 전송하려면 전송 동의에 체크해야 합니다.');return;}
  if(!validatePhotoFiles(files))return;
@@ -896,16 +907,34 @@ $('runPhotoClassification').addEventListener('click',async()=>{
 $('retryPhotoClassification').addEventListener('click',async()=>{if(!classifyQueue.some(x=>x.status==='failed'))return;await processPhotoQueue('classify',true);});
 $('applyPhotoClassification').addEventListener('click',()=>{
  if(!photoClassifyDrafts.length){alert('반영할 사진이 없습니다.');return;}
- const grouped=new Map();let unassigned=0;
- photoClassifyDrafts.forEach(photo=>{const idx=Number(photo.stageIndex);const template=Number.isInteger(idx)&&idx>=0?PHOTO_STAGE_TEMPLATES[idx]:null;if(!template){unassigned++;return;}if(!grouped.has(idx))grouped.set(idx,[]);grouped.get(idx).push({name:photo.name,data:photo.data,description:photo.description||''});photo.confirmed=true;});
- if(!grouped.size){alert('공정에 배치할 수 있는 사진이 없습니다. 사진별 추천 단계를 수정해 주세요.');return;}
- const ordered=[...grouped.keys()].sort((a,b)=>a-b);
- const stages=ordered.map(idx=>{const t=PHOTO_STAGE_TEMPLATES[idx],photos=grouped.get(idx);const descriptions=[...new Set(photos.map(x=>x.description).filter(Boolean))];return {title:t.title,detail:descriptions.join(' / '),temperature:'',time:'',point:'',images:photos.map(({name,data})=>({name,data}))};});
- // 기존 카드를 누적하지 않고, 이번 사진에서 확인된 공정으로 전체 목록을 재구성합니다.
- $('processStages').innerHTML='';stages.forEach(stage=>addProcessStage(stage));
+ const currentCards=Array.from(document.querySelectorAll('#processStages .process-stage'));
+ if(!currentCards.length){alert('현재 제조공정이 없습니다. 공정부터 등록해 주세요.');return;}
+ // 추천 결과는 사진 첨부만 수행합니다. 기존 공정 카드의 생성·삭제·순서·입력값은 절대 변경하지 않습니다.
+ let attached=0,unassigned=0,invalid=0;
+ photoClassifyDrafts.forEach(photo=>{
+  const idx=Number(photo.stageIndex);
+  if(!Number.isInteger(idx)||idx<0){unassigned++;return;}
+  const expectedTitle=activePhotoStages[idx]?.title||'';
+  let card=currentCards[idx];
+  if(!card || (card.querySelector('.stage-title')?.value.trim()||'')!==expectedTitle){
+   card=currentCards.find(candidate=>(candidate.querySelector('.stage-title')?.value.trim()||'')===expectedTitle);
+  }
+  if(!card){invalid++;return;}
+  const data=JSON.parse(card.dataset.images||'[]');
+  data.push({name:photo.name,data:photo.data});
+  card.dataset.images=JSON.stringify(data);
+  const preview=card.querySelector('.stage-image-preview');
+  if(preview){
+   const renderPreview=items=>renderAttachmentPreview(preview,items,removeIndex=>{
+    const updated=JSON.parse(card.dataset.images||'[]');
+    updated.splice(removeIndex,1);card.dataset.images=JSON.stringify(updated);
+    renderPreview(updated);
+   });
+   renderPreview(data);
+  }
+  photo.confirmed=true;attached++;
+ });
  v5Photos=(Array.isArray(v5Photos)?v5Photos:[]).concat(photoClassifyDrafts.filter(p=>p.confirmed));v5Approved=true;v5Render();
- $('classifyPhotoStatus').textContent='기존 공정을 교체하고 사진에서 확인된 '+stages.length+'개 공정으로 재구성했습니다. 사진 '+(photoClassifyDrafts.length-unassigned)+'장을 연결했습니다.'+(unassigned?' · 미분류 '+unassigned+'장은 제외했습니다.':'')+' 공정 내용·온도·시간은 실제 실습에 맞게 확인하고 수정하세요.';
+ $('classifyPhotoStatus').textContent=`사진 ${attached}장을 기존 제조공정에 첨부했습니다. 공정 자체는 삭제·추가·교체하지 않았습니다.`+(unassigned?` 미분류 ${unassigned}장 제외.`:'')+(invalid?` 연결 대상이 사라진 사진 ${invalid}장 제외.`:'');
  $('applyPhotoClassification').disabled=true;
 });
-
-</script></body></html>
